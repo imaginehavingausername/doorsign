@@ -4,14 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Door Sign</title>
-  <!-- The CSS will be loaded dynamically into this style tag -->
   <style id="dynamic-style"></style>
 </head>
 <body>
-  <!-- The content from message.html will be loaded here -->
   <div id="content">Loading...</div>
 
   <script>
+    // This variable holds our timer, so we can stop and start it cleanly.
     let countdownInterval;
 
     async function loadHTML() {
@@ -20,11 +19,8 @@
         let html = await res.text();
         document.getElementById('content').innerHTML = html;
         
-        // --- CHANGE ---
-        // We use a tiny timeout. This ensures the browser has fully processed the new HTML 
-        // before we ask our script to find the countdown elements and start the timer.
-        // This prevents a "race condition" and is likely the fix for the timer being stuck.
-        setTimeout(startCountdown, 0);
+        // Give the browser a millisecond to process the new HTML before we run the timer script.
+        setTimeout(startCountdown, 1);
 
       } catch(e) {
         console.error("HTML fetch failed:", e);
@@ -42,15 +38,31 @@
     }
 
     function startCountdown() {
+      // First, we always clear any old timer that might be running.
       if (countdownInterval) {
         clearInterval(countdownInterval);
       }
 
+      // --- THE FIX ---
+      // Now, we grab the timer elements from the newly loaded HTML.
+      const daysEl = document.getElementById('days');
+      const hoursEl = document.getElementById('hours');
+      const minutesEl = document.getElementById('minutes');
+      const secondsEl = document.getElementById('seconds');
+
+      // We ONLY proceed if all those elements were successfully found.
+      // This prevents errors if the script runs before the HTML is ready.
+      if (!daysEl || !hoursEl || !minutesEl || !secondsEl) {
+        console.error("Countdown elements not found. Timer will not start.");
+        return; // Stop the function here.
+      }
+
       const countdown = () => {
         const now = new Date();
-        let christmasYear = now.getFullYear();
+        const christmasYear = now.getFullYear();
         let christmasDate = new Date(`December 25, ${christmasYear} 00:00:00`);
 
+        // If it's already past Christmas, count down to next year's.
         if (now > christmasDate) {
           christmasDate = new Date(`December 25, ${christmasYear + 1} 00:00:00`);
         }
@@ -61,31 +73,23 @@
         const hours = Math.floor(totalSeconds / 3600) % 24;
         const minutes = Math.floor(totalSeconds / 60) % 60;
         const seconds = Math.floor(totalSeconds) % 60;
-
-        const daysEl = document.getElementById('days');
-        const hoursEl = document.getElementById('hours');
-        const minutesEl = document.getElementById('minutes');
-        const secondsEl = document.getElementById('seconds');
-
-        if (daysEl && hoursEl && minutesEl && secondsEl) {
-          daysEl.innerText = days;
-          hoursEl.innerText = String(hours).padStart(2, '0');
-          minutesEl.innerText = String(minutes).padStart(2, '0');
-          secondsEl.innerText = String(seconds).padStart(2, '0');
-        } else {
-            clearInterval(countdownInterval);
-        }
+        
+        // Update the numbers on the screen.
+        daysEl.innerText = days;
+        hoursEl.innerText = String(hours).padStart(2, '0');
+        minutesEl.innerText = String(minutes).padStart(2, '0');
+        secondsEl.innerText = String(seconds).padStart(2, '0');
       };
       
-      countdown();
-      countdownInterval = setInterval(countdown, 1000);
+      countdown(); // Run once immediately.
+      countdownInterval = setInterval(countdown, 1000); // Then update every second.
     }
 
     // Initial load
     loadHTML();
     loadCSS();
 
-    // Refresh every 10 seconds
+    // Refresh content every 10 seconds
     setInterval(loadHTML, 10000);
     setInterval(loadCSS, 10000);
   </script>
