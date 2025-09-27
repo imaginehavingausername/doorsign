@@ -12,7 +12,6 @@ body {
     overflow: hidden;
 
     /* The Background: Watery, Steamy Gradient */
-    /* Colors: Icy White, Soft Sky Blue, Light Aqua, and a hint of Silver-Gray (Clean water/steam) */
     background: linear-gradient(-90deg, #f0f8ff, #cfe6f0, #e6f7ff, #b5dceb);
     background-size: 300% 300%;
     animation: waterFlow 25s ease-in-out infinite; /* Slow, continuous, flowing animation */
@@ -24,7 +23,7 @@ body {
         background-position: 0% 50%;
     }
     50% {
-        background-position: 100% 50%; /* Shifts the gradient horizontally to simulate flow */
+        background-position: 100% 50%;
     }
     100% {
         background-position: 0% 50%;
@@ -33,12 +32,17 @@ body {
 
 ---
 
-/* --- Content & Centering --- */
+/* --- CONTENT CENTERING BLOCK (The Key to Centering) --- */
 #content {
+    /* 1. Use Flexbox to manage child alignment */
     display: flex;
+    /* 2. Center content horizontally */
     justify-content: center;
+    /* 3. Center content vertically */
     align-items: center;
-    height: 100%;
+    /* 4. Ensure the container takes up the full space */
+    height: 100%; 
+    
     text-align: center;
     padding: 20px;
     box-sizing: border-box;
@@ -46,6 +50,7 @@ body {
 
 /* The inner container for the lines of text from message.html */
 .text-container {
+    /* Use flexbox to stack the lines vertically */
     display: flex;
     flex-direction: column;
     max-width: 90%;
@@ -57,25 +62,21 @@ body {
 .line {
     margin: 5px 0;
     line-height: 1.0;
-    /* A soft text shadow to make the text pop against the light background */
     text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.7);
-    font-weight: 700; /* Bold */
+    font-weight: 700;
     text-transform: uppercase;
 }
 
 /* 1. The "he is" line */
 .small {
-    /* Text will now read "he is" */
     font-size: 5vw;
-    color: #4a80a8; /* A cool, medium blue */
+    color: #4a80a8; 
     opacity: 0.8;
 }
 
 /* 2. The "showering" line (main focus) */
 .big {
-    /* Text will now read "showering" */
-    /* Scaling up slightly since "showering" is shorter than "doing homework" */
     font-size: 10vw;
-    color: #0b3447; /* A deep, navy/ocean blue */
+    color: #0b3447;
     margin-top: 0;
 }
