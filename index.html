@@ -3,80 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <title>Door Sign</title>
-  <style id="dynamic-style">
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
-    body {
-      display: flex;
-      justify-content: center;  /* horizontal */
-      align-items: center;      /* vertical */
-      background: black;
-      color: limegreen;
-      font-size: 3em;
-      font-family: monospace;
-      transition: all 0.5s ease;
-      text-align: center;
-    }
-    #message {
-      max-width: 90%;
-      word-wrap: break-word;
-    }
-  </style>
+  <style id="dynamic-style"></style>
 </head>
 <body>
-  <div id="message">Loading...</div>
+  <div id="content">Loading...</div>
 
   <script>
-    async function loadMessage() {
+    async function loadHTML() {
       try {
-        let res = await fetch("message.txt?time=" + Date.now(), {cache: "no-store"});
-        let text = await res.text();
-        document.getElementById("message").innerText = text;
+        let res = await fetch('message.html?time=' + Date.now(), {cache: "no-store"});
+        let html = await res.text();
+        document.getElementById('content').innerHTML = html;
       } catch(e) {
-        console.error("Message fetch failed:", e);
+        console.error("HTML fetch failed:", e);
       }
     }
 
-    async function loadStyle() {
+    async function loadCSS() {
       try {
-        let res = await fetch("style.json?time=" + Date.now(), {cache: "no-store"});
-        let json = await res.json();
-        let css = `
-          html, body { height: 100%; margin: 0; }
-          body {
-            background: ${json.background || "black"};
-            color: ${json.color || "limegreen"};
-            font-size: ${json.fontSize || "3em"};
-            font-family: ${json.fontFamily || "monospace"};
-            transition: all 0.5s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-          }
-          #message {
-            animation: ${json.animation || "none"};
-            max-width: 90%;
-            word-wrap: break-word;
-          }
-          @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-          }
-        `;
-        document.getElementById("dynamic-style").textContent = css;
+        let res = await fetch('style.css?time=' + Date.now(), {cache: "no-store"});
+        let css = await res.text();
+        document.getElementById('dynamic-style').textContent = css;
       } catch(e) {
-        console.error("Style fetch failed:", e);
+        console.error("CSS fetch failed:", e);
       }
     }
 
-    loadMessage();
-    loadStyle();
-    setInterval(loadMessage, 10000);
-    setInterval(loadStyle, 10000);
+    // Initial load
+    loadHTML();
+    loadCSS();
+
+    // Refresh every 10 seconds (adjust as desired)
+    setInterval(loadHTML, 10000);
+    setInterval(loadCSS, 10000);
   </script>
 </body>
 </html>
