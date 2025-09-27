@@ -13,7 +13,7 @@ body {
 
     /* The Dynamic Radial Gradient: Breathing Waves Effect */
     /* Colors: Deep Sapphire, Midnight Purple, and a hint of soft Teal. */
-    background: radial-gradient(circle at center, #344c8f 0%, #0c175e 50%, #522679 100%);
+    background: radial-gradient(circle at center, #4191b8 0%, #194ba1 50%, #9da2a8 100%);
     background-size: 300% 300%; /* Larger than screen to enable noticeable shifts */
     animation: radialShift 25s ease-in-out infinite alternate; /* Slower, more 'breathing' animation */
 }
@@ -68,7 +68,7 @@ body {
 
 /* 2. The "asleep" line - BIG and center of attention */
 .big {
-    font-size: 18vw;
+    font-size: 10vw;
     color: #f0f0f0; /* Keep the 'asleep' line a soft off-white/light gray */
     margin-top: 0;
 }
