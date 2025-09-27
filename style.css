@@ -1,64 +1,111 @@
-/* Full-page layout */
+/* full-page layout */
 html, body {
+  height: 100%;
   margin: 0;
   padding: 0;
-  height: 100%;
-  width: 100%;
   overflow: hidden;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* dreamy gradient base */
+body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Segoe UI', sans-serif;
   text-align: center;
-  background: linear-gradient(120deg, #4b6cb7, #182848, #6a11cb);
+  background: linear-gradient(120deg, #12182b 0%, #26305a 40%, #4b2b86 100%);
+  color: #ffffff;
 }
 
-/* Text container */
-.text-container {
-  position: relative;
-  z-index: 2; /* in front of background */
+/* moving diagonal bars (seamless) */
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+
+  /* repeating diagonal bars — multiple blue/purple shades */
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(95,138,255,0.20) 0px,
+    rgba(95,138,255,0.20) 80px,
+    rgba(110,86,255,0.18) 80px,
+    rgba(110,86,255,0.18) 160px,
+    rgba(72,128,255,0.16) 160px,
+    rgba(72,128,255,0.16) 240px,
+    rgba(57,90,200,0.14) 240px,
+    rgba(57,90,200,0.14) 320px
+  );
+
+  /* background-repeat is implicit for repeating-linear-gradient; animate the background-position to scroll */
+  background-size: auto;
+  animation: slideBars 18s linear infinite;
+  filter: blur(6px) saturate(120%);
+  mix-blend-mode: overlay;
 }
 
-/* Lines of text */
-.line {
-  color: white;
-  line-height: 1.2;
-}
-
-.line.small {
-  font-size: 6em; /* doubled for phone */
-}
-
-.line.big {
-  font-size: 10em; /* doubled for phone */
-  font-weight: bold;
-}
-
-/* Moving diagonal bars */
+/* a faint layer of soft floating haze to smooth edges even more */
 body::after {
   content: "";
   position: absolute;
-  top: 0;
-  left: -150%;
-  width: 300%;
-  height: 100%;
-  background-image: repeating-linear-gradient(
-    45deg,
-    rgba(75,108,183,0.4) 0px,
-    rgba(75,108,183,0.4) 20px,
-    rgba(106,17,203,0.4) 20px,
-    rgba(106,17,203,0.4) 40px,
-    rgba(27,40,72,0.4) 40px,
-    rgba(27,40,72,0.4) 60px
-  );
-  background-size: cover;
-  animation: moveBars 20s linear infinite;
-  z-index: 1;
+  inset: 0;
+  z-index: 0;
   pointer-events: none;
+  background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.02), transparent 8%),
+              radial-gradient(circle at 80% 80%, rgba(255,255,255,0.02), transparent 10%);
+  opacity: 0.6;
 }
 
-/* Animate diagonal bars */
-@keyframes moveBars {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+/* center text and keep it above backgrounds */
+.text-container {
+  position: relative;
+  z-index: 2;
+  padding: 0 6%;
+  box-sizing: border-box;
+}
+
+/* text styling - very readable, scaled for phone */
+.line {
+  margin: 0;
+  color: #ffffff;
+  text-shadow: 0 6px 18px rgba(10,10,20,0.6), 0 1px 0 rgba(255,255,255,0.02);
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+/* "he is" — big but smaller than asleep */
+.line.small {
+  font-weight: 600;
+  font-size: clamp(36px, 8vw, 140px); /* scales with viewport but caps */
+  margin-bottom: 0.12em;
+  opacity: 0.95;
+}
+
+/* "asleep" — much larger, emphasis */
+.line.big {
+  font-weight: 800;
+  font-size: clamp(64px, 18vw, 260px); /* noticeably bigger on phones */
+  letter-spacing: -0.02em;
+  opacity: 1;
+}
+
+/* subtle breathing animation for the text to feel dreamy */
+@keyframes breathe {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.02); opacity: 0.98; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.text-container { animation: breathe 8s ease-in-out infinite; }
+
+/* sliding bars animation (seamless because repeating-linear-gradient repeats) */
+@keyframes slideBars {
+  0%   { background-position: 0 0; }
+  100% { background-position: -480px 0; } /* shift by one repeat width */
+}
+
+/* keep content centered if message wraps to multiple lines */
+@media (max-width: 420px) {
+  .text-container { padding: 0 4%; }
 }
