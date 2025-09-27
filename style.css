@@ -1,7 +1,6 @@
-/* --- CRITICAL FIX: Ensure HTML and Body use full height and remove padding/margin --- */
+/* --- CRITICAL FIX: Ensure HTML and Body use full viewport height --- */
 html, body {
-    /* Forcing the height to 100% of the viewport (vh) */
-    height: 100vh;
+    height: 100vh; /* Use Viewport Height for guaranteed full screen height */
     width: 100%;
     margin: 0;
     padding: 0;
@@ -10,11 +9,6 @@ html, body {
 
 /* --- Body Styling and Refreshing Gradient Background --- */
 body {
-    /* Set body to be a flex container to aid in content centering */
-    display: flex;
-    justify-content: center; /* Center content within body horizontally */
-    align-items: center;   /* Center content within body vertically */
-    
     font-family: 'Helvetica Neue', Arial, sans-serif;
     color: #0b3447;
 
@@ -39,11 +33,15 @@ body {
 
 ---
 
-/* --- CONTENT CENTERING BLOCK: Centering is now mainly done by the BODY tag --- */
+/* --- CONTENT CENTERING BLOCK: BACK TO THE RELIABLE METHOD --- */
 #content {
-    /* No need for explicit flex centering here, as the body handles it. */
-    /* Ensure it doesn't take up excessive width */
-    max-width: 90vw; 
+    /* 1. Use Flexbox to align content */
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;   /* Centers vertically */
+
+    /* 2. Ensure it takes up the full height of the body/viewport */
+    height: 100%;          
     
     text-align: center;
     box-sizing: border-box;
@@ -55,7 +53,6 @@ body {
     flex-direction: column;
     align-items: center; 
     max-width: 90%;
-    /* margin: 0 auto; removed as body/content centering should make it unnecessary */
 }
 
 ---
