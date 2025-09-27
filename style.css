@@ -1,4 +1,4 @@
-/* --- Global Body Styling and Gradient Background --- */
+/* --- Global Body Styling and Dynamic Radial Gradient Background --- */
 body {
     /* Full viewport size */
     width: 100vw;
@@ -11,65 +11,64 @@ body {
     color: #f0f0f0; /* Light text color for contrast */
     overflow: hidden; /* Hide scrollbars that might appear */
 
-    /* The Moving Gradient: Colors and Animation */
-    /* Colors: Dark Blue -> Deep Purple -> Soft Indigo (Sleepy/Night Sky feel) */
-    background: linear-gradient(-45deg, #1a237e, #4527a0, #283593, #3949ab);
-    background-size: 400% 400%; /* Make the gradient much larger than the screen */
-    animation: gradientShift 20s ease infinite; /* Slow, gentle, 20-second loop */
+    /* The Dynamic Radial Gradient: Breathing Waves Effect */
+    /* Colors: Deep Sapphire, Midnight Purple, and a hint of soft Teal. */
+    background: radial-gradient(circle at center, #2c3e50 0%, #0c1729 50%, #16264d 100%);
+    background-size: 300% 300%; /* Larger than screen to enable noticeable shifts */
+    animation: radialShift 25s ease-in-out infinite alternate; /* Slower, more 'breathing' animation */
 }
 
-/* Keyframes for the gradient animation */
-@keyframes gradientShift {
+/* Keyframes for the dynamic wave/breathing effect */
+@keyframes radialShift {
     0% {
-        background-position: 0% 50%;
+        background-position: 0% 50%; /* Start state */
     }
     50% {
-        background-position: 100% 50%; /* Shift the gradient across the screen */
+        /* Shift the center point and size for the "wave" or "pulse" effect */
+        background-position: 100% 70%;
     }
     100% {
-        background-position: 0% 50%;
+        background-position: 0% 50%; /* Return to start state */
     }
 }
 
 /* --- Content & Centering --- */
-/* The main container for the content fetched by index.html */
 #content {
     display: flex; /* Enable flexbox for centering */
     justify-content: center; /* Center content horizontally */
     align-items: center; /* Center content vertically */
     height: 100%; /* Take up full height of the body */
-    text-align: center; /* Ensure lines wrap/align correctly */
-    padding: 20px; /* Small padding buffer */
-    box-sizing: border-box; /* Include padding in the element's total width and height */
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 /* The inner container for the lines of text from message.html */
 .text-container {
-    /* Use flexbox for vertical stacking */
     display: flex;
     flex-direction: column;
-    /* Optional: Max width to ensure it doesn't spread too thin on huge screens */
-    max-width: 90%; 
+    max-width: 90%;
 }
 
 /* --- Text Styling and Sizing --- */
 .line {
-    margin: 10px 0; /* Vertical spacing between the lines */
-    line-height: 1.1; /* Tighter line spacing */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Soft text shadow for readability */
-    font-weight: 700; /* Bold text */
-    text-transform: uppercase; /* Use all caps for a clear sign look */
+    margin: 10px 0;
+    line-height: 1.1;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7); /* Stronger shadow for better visibility against dynamic background */
+    font-weight: 800; /* Extra bold text */
+    text-transform: uppercase;
 }
 
+/* 1. The "he is" line (Now set to bright white as requested) */
 .small {
-    /* The "he is" line */
-    font-size: 6vw; /* Relative size based on viewport width */
-    opacity: 0.8; /* Slightly deemphasize this line */
+    font-size: 6vw;
+    color: #FFFFFF; /* ⭐️ This sets the 'he is' line to white ⭐️ */
+    opacity: 0.85; /* Keep it slightly less prominent than 'asleep' */
 }
 
+/* 2. The "asleep" line - BIG and center of attention */
 .big {
-    /* The "asleep" line - BIG and center of attention */
-    font-size: 18vw; /* Much larger, taking up the middle of the screen */
-    /* If 18vw is too big for your screen, adjust it down (e.g., 14vw) */
-    margin-top: 0; /* Reduce space above the main word */
+    font-size: 18vw;
+    color: #f0f0f0; /* Keep the 'asleep' line a soft off-white/light gray */
+    margin-top: 0;
 }
