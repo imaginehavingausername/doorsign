@@ -1,21 +1,21 @@
-/* --- Global Body Styling and Refreshing Gradient Background --- */
-/* CRITICAL STEP 1: Ensure both HTML and Body use 100% height */
+/* --- CRITICAL FIX: Ensure HTML and Body use full height and remove padding/margin --- */
 html, body {
     height: 100%;
+    width: 100%;
     margin: 0;
     padding: 0;
+    overflow: hidden; /* Prevent scrollbars */
 }
 
+/* --- Body Styling and Refreshing Gradient Background --- */
 body {
-    width: 100vw;
     font-family: 'Helvetica Neue', Arial, sans-serif;
     color: #0b3447;
-    overflow: hidden;
 
     /* The Background: Watery, Steamy Gradient */
     background: linear-gradient(-90deg, #f0f8ff, #cfe6f0, #e6f7ff, #b5dceb);
     background-size: 300% 300%;
-    animation: waterFlow 25s ease-in-out infinite;
+    animation: waterFlow 25s ease-in-out infinite; /* Slow, continuous, flowing animation */
 }
 
 /* Keyframes for the flowing water/steam effect */
@@ -33,23 +33,27 @@ body {
 
 ---
 
-/* --- CONTENT CENTERING BLOCK (The Key to Centering) --- */
+/* --- ABSOLUTE CENTERING BLOCK (This should resolve the issue) --- */
 #content {
-    /* CRITICAL STEP 2: Use Flexbox and full height to center content */
+    /* 1. Take up the entire screen space */
+    height: 100%;
+    width: 100%;
+
+    /* 2. Use Flexbox to align content */
     display: flex;
     justify-content: center; /* Centers horizontally */
     align-items: center;   /* Centers vertically */
-    height: 100%;          /* Must take up 100% of the body height */
-    
+
     text-align: center;
-    padding: 20px;
     box-sizing: border-box;
 }
 
 /* The inner container for the lines of text from message.html */
 .text-container {
+    /* Ensure the content is stacked correctly within the center of the screen */
     display: flex;
     flex-direction: column;
+    align-items: center; /* Centers the lines themselves if they were different widths */
     max-width: 90%;
 }
 
@@ -67,7 +71,7 @@ body {
 /* 1. The "he is" line */
 .small {
     font-size: 5vw;
-    color: #4a80a8; 
+    color: #4a80a8;
     opacity: 0.8;
 }
 
