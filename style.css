@@ -1,4 +1,4 @@
-/* --- Global Body Styling and Focused Gradient Background --- */
+/* --- Global Body Styling and Refreshing Gradient Background --- */
 body {
     /* Full viewport size */
     width: 100vw;
@@ -6,25 +6,28 @@ body {
     /* Remove default margins and padding */
     margin: 0;
     padding: 0;
-    /* Use a clear, academic font */
-    font-family: 'Roboto', Arial, sans-serif;
-    color: #0d1a26; /* Dark text color for contrast against light background */
+    /* Use a clean, relaxed font */
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #0b3447; /* Deep, cool blue text color */
     overflow: hidden;
 
-    /* The Background: Clean, Subtle, and Focused */
-    /* Colors: Very light grays and off-whites, with a hint of soothing blue/green (like a clean sheet of paper or whiteboard) */
-    background: linear-gradient(to right bottom, #e0eafc, #eef1f3, #c2e0c2, #d5f0d5);
+    /* The Background: Watery, Steamy Gradient */
+    /* Colors: Icy White, Soft Sky Blue, Light Aqua, and a hint of Silver-Gray (Clean water/steam) */
+    background: linear-gradient(-90deg, #f0f8ff, #cfe6f0, #e6f7ff, #b5dceb);
     background-size: 300% 300%;
-    animation: focusShift 20s ease-in-out infinite alternate; /* Slow, non-distracting animation */
+    animation: waterFlow 25s ease-in-out infinite; /* Slow, continuous, flowing animation */
 }
 
-/* Keyframes for the subtle, slow shift (mimicking a very slow, calming flow of thought) */
-@keyframes focusShift {
+/* Keyframes for the flowing water/steam effect */
+@keyframes waterFlow {
     0% {
         background-position: 0% 50%;
     }
+    50% {
+        background-position: 100% 50%; /* Shifts the gradient horizontally to simulate flow */
+    }
     100% {
-        background-position: 100% 50%;
+        background-position: 0% 50%;
     }
 }
 
@@ -54,9 +57,9 @@ body {
 .line {
     margin: 5px 0;
     line-height: 1.0;
-    /* A very subtle text shadow, more like a slight glow than a drop shadow */
-    text-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
-    font-weight: 600; /* Medium-bold for readability */
+    /* A soft text shadow to make the text pop against the light background */
+    text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.7);
+    font-weight: 700; /* Bold */
     text-transform: uppercase;
 }
 
@@ -64,15 +67,15 @@ body {
 .small {
     /* Text will now read "he is" */
     font-size: 5vw;
-    color: #444a59; /* A professional, dark slate-gray */
-    opacity: 0.9;
+    color: #4a80a8; /* A cool, medium blue */
+    opacity: 0.8;
 }
 
-/* 2. The "doing homework" line (previously "getting dressed") */
+/* 2. The "showering" line (main focus) */
 .big {
-    /* Text will now read "doing homework" */
-    /* Scaled down further to fit the longest phrase yet ("doing homework") */
-    font-size: 8vw;
-    color: #1a1a1a; /* True black/very dark color for maximum clarity and focus */
+    /* Text will now read "showering" */
+    /* Scaling up slightly since "showering" is shorter than "doing homework" */
+    font-size: 10vw;
+    color: #0b3447; /* A deep, navy/ocean blue */
     margin-top: 0;
 }
