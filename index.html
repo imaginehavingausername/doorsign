@@ -9,11 +9,17 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      margin: 0;
       background: black;
       color: limegreen;
       font-size: 3em;
       font-family: monospace;
       transition: all 0.5s ease;
+      text-align: center; /* ensures multi-line text is centered */
+    }
+    #message {
+      max-width: 90%;
+      word-wrap: break-word;
     }
   </style>
 </head>
@@ -42,9 +48,15 @@
             font-size: ${json.fontSize || "3em"};
             font-family: ${json.fontFamily || "monospace"};
             transition: all 0.5s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
           }
           #message {
             animation: ${json.animation || "none"};
+            max-width: 90%;
+            word-wrap: break-word;
           }
           @keyframes pulse {
             0% { transform: scale(1); }
@@ -58,11 +70,10 @@
       }
     }
 
-    // Load immediately, then refresh every 10s
     loadMessage();
     loadStyle();
-    setInterval(loadMessage, 10000);
-    setInterval(loadStyle, 10000);
+    setInterval(loadMessage, 5000);
+    setInterval(loadStyle, 5000);
   </script>
 </body>
 </html>
