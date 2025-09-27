@@ -2,18 +2,30 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Door Sign</title>
+  <!-- The CSS will be loaded dynamically into this style tag -->
   <style id="dynamic-style"></style>
 </head>
 <body>
+  <!-- The content from message.html will be loaded here -->
   <div id="content">Loading...</div>
 
   <script>
+    // A variable to hold our countdown timer interval, so we can manage it.
+    let countdownInterval;
+
     async function loadHTML() {
       try {
+        // We fetch the message.html content, adding a timestamp to prevent the browser from caching it.
         let res = await fetch('message.html?time=' + Date.now(), {cache: "no-store"});
         let html = await res.text();
         document.getElementById('content').innerHTML = html;
+        
+        // --- NEW ---
+        // After the new HTML is loaded, we start the countdown timer.
+        startCountdown();
+
       } catch(e) {
         console.error("HTML fetch failed:", e);
       }
@@ -21,6 +33,7 @@
 
     async function loadCSS() {
       try {
+        // We fetch the style.css content, also preventing caching.
         let res = await fetch('style.css?time=' + Date.now(), {cache: "no-store"});
         let css = await res.text();
         document.getElementById('dynamic-style').textContent = css;
@@ -29,11 +42,65 @@
       }
     }
 
-    // Initial load
+    // --- NEW: Countdown Timer Logic ---
+    function startCountdown() {
+      // If a timer is already running, we clear it before starting a new one.
+      // This prevents multiple timers from running at once if loadHTML is called again.
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+
+      const countdown = () => {
+        const now = new Date();
+        let christmasYear = now.getFullYear();
+        // Set the date for this year's Christmas.
+        let christmasDate = new Date(`December 25, ${christmasYear} 00:00:00`);
+
+        // If Christmas for this year has already passed, we aim for next year's Christmas.
+        if (now > christmasDate) {
+          christmasYear++;
+          christmasDate = new Date(`December 25, ${christmasYear} 00:00:00`);
+        }
+
+        // Calculate the total remaining seconds.
+        const totalSeconds = (christmasDate - now) / 1000;
+
+        // Convert seconds into days, hours, minutes, and seconds.
+        const days = Math.floor(totalSeconds / 3600 / 24);
+        const hours = Math.floor(totalSeconds / 3600) % 24;
+        const minutes = Math.floor(totalSeconds / 60) % 60;
+        const seconds = Math.floor(totalSeconds) % 60;
+
+        // Find the HTML elements for the countdown.
+        const daysEl = document.getElementById('days');
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+
+        // Update the HTML text, but only if the elements actually exist on the page.
+        if (daysEl && hoursEl && minutesEl && secondsEl) {
+          daysEl.innerText = days;
+          // .padStart(2, '0') adds a leading zero if the number is less than 10 (e.g., 9 becomes 09).
+          hoursEl.innerText = String(hours).padStart(2, '0');
+          minutesEl.innerText = String(minutes).padStart(2, '0');
+          secondsEl.innerText = String(seconds).padStart(2, '0');
+        } else {
+            // If the elements aren't found, stop the timer. It will restart on the next HTML load.
+            clearInterval(countdownInterval);
+        }
+      };
+
+      // Run the countdown function once immediately to show the time without a 1-second delay.
+      countdown();
+      // Then, set it to run every single second to keep the timer live.
+      countdownInterval = setInterval(countdown, 1000);
+    }
+
+    // Initial load when the page first opens.
     loadHTML();
     loadCSS();
 
-    // Refresh every 10 seconds (adjust as desired)
+    // Set the page to refresh content every 10 seconds.
     setInterval(loadHTML, 10000);
     setInterval(loadCSS, 10000);
   </script>
