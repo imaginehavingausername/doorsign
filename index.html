@@ -4,18 +4,20 @@
   <meta charset="UTF-8">
   <title>Door Sign</title>
   <style id="dynamic-style">
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
     body {
       display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+      justify-content: center;  /* horizontal */
+      align-items: center;      /* vertical */
       background: black;
       color: limegreen;
       font-size: 3em;
       font-family: monospace;
       transition: all 0.5s ease;
-      text-align: center; /* ensures multi-line text is centered */
+      text-align: center;
     }
     #message {
       max-width: 90%;
@@ -42,6 +44,7 @@
         let res = await fetch("style.json?time=" + Date.now(), {cache: "no-store"});
         let json = await res.json();
         let css = `
+          html, body { height: 100%; margin: 0; }
           body {
             background: ${json.background || "black"};
             color: ${json.color || "limegreen"};
@@ -72,8 +75,8 @@
 
     loadMessage();
     loadStyle();
-    setInterval(loadMessage, 5000);
-    setInterval(loadStyle, 5000);
+    setInterval(loadMessage, 10000);
+    setInterval(loadStyle, 10000);
   </script>
 </body>
 </html>
