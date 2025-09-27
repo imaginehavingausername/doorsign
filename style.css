@@ -5,6 +5,9 @@ html, body {
   padding: 0;
   overflow: hidden;
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* dreamy gradient base */
@@ -26,7 +29,6 @@ body::before {
   pointer-events: none;
   opacity: 0.55;
 
-  /* repeating diagonal bars — multiple blue/purple shades */
   background-image: repeating-linear-gradient(
     135deg,
     rgba(95,138,255,0.20) 0px,
@@ -39,8 +41,6 @@ body::before {
     rgba(57,90,200,0.14) 320px
   );
 
-  /* background-repeat is implicit for repeating-linear-gradient; animate the background-position to scroll */
-  background-size: auto;
   animation: slideBars 18s linear infinite;
   filter: blur(6px) saturate(120%);
   mix-blend-mode: overlay;
@@ -64,6 +64,11 @@ body::after {
   z-index: 2;
   padding: 0 6%;
   box-sizing: border-box;
+
+  /* stable rendering hints */
+  transform-origin: center center;
+  backface-visibility: hidden;
+  will-change: opacity;
 }
 
 /* text styling - very readable, scaled for phone */
@@ -73,31 +78,36 @@ body::after {
   text-shadow: 0 6px 18px rgba(10,10,20,0.6), 0 1px 0 rgba(255,255,255,0.02);
   line-height: 1;
   letter-spacing: 0.02em;
+
+  /* keep metrics stable: same font-weight for both lines */
+  font-weight: 700;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: block;
+  word-break: break-word;
 }
 
 /* "he is" — big but smaller than asleep */
 .line.small {
-  font-weight: 600;
-  font-size: clamp(36px, 8vw, 140px); /* scales with viewport but caps */
+  font-size: clamp(48px, 10vw, 160px);
   margin-bottom: 0.12em;
-  opacity: 0.95;
+  opacity: 0.98;
 }
 
 /* "asleep" — much larger, emphasis */
 .line.big {
-  font-weight: 800;
-  font-size: clamp(64px, 18vw, 260px); /* noticeably bigger on phones */
+  font-size: clamp(88px, 22vw, 320px);
   letter-spacing: -0.02em;
   opacity: 1;
 }
 
-/* subtle breathing animation for the text to feel dreamy */
-@keyframes breathe {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.02); opacity: 0.98; }
-  100% { transform: scale(1); opacity: 1; }
+/* subtle opacity-only breathing so geometry never changes */
+@keyframes breatheOpacity {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.995; }
+  100% { opacity: 1; }
 }
-.text-container { animation: breathe 8s ease-in-out infinite; }
+.text-container { animation: breatheOpacity 10s ease-in-out infinite; }
 
 /* sliding bars animation (seamless because repeating-linear-gradient repeats) */
 @keyframes slideBars {
