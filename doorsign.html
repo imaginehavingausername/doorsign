@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Door Sign</title>
+  <style>
+    body {
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      background:black;
+      color:limegreen;
+      font-size:3em;
+      font-family:monospace;
+    }
+  </style>
+</head>
+<body>
+  <div id="message">Loading...</div>
+  <script>
+    async function loadMessage() {
+      try {
+        let res = await fetch("message.txt?time=" + Date.now(), {cache: "no-store"});
+        let text = await res.text();
+        document.getElementById("message").innerText = text;
+      } catch(e) {
+        console.error(e);
+      }
+    }
+    loadMessage();
+    setInterval(loadMessage, 5000); // every 5s
+  </script>
+</body>
+</html>
