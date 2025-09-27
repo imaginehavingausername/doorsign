@@ -1,5 +1,5 @@
 /* Full-page layout */
-body, html {
+html, body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -10,12 +10,13 @@ body, html {
   align-items: center;
   font-family: 'Segoe UI', sans-serif;
   text-align: center;
+  background: linear-gradient(120deg, #4b6cb7, #182848, #6a11cb);
 }
 
 /* Text container */
 .text-container {
   position: relative;
-  z-index: 2; /* in front of background lines */
+  z-index: 2; /* in front of background */
 }
 
 /* Lines of text */
@@ -25,30 +26,39 @@ body, html {
 }
 
 .line.small {
-  font-size: 3em;
+  font-size: 6em; /* doubled for phone */
 }
 
 .line.big {
-  font-size: 5em;
+  font-size: 10em; /* doubled for phone */
   font-weight: bold;
 }
 
-/* Background gradient */
-body::before {
+/* Moving diagonal bars */
+body::after {
   content: "";
   position: absolute;
   top: 0;
-  left: -100%; /* start offscreen */
-  width: 300%; /* long for animation */
+  left: -150%;
+  width: 300%;
   height: 100%;
-  background: linear-gradient(120deg, #4b6cb7, #182848, #6a11cb);
-  animation: moveLines 15s linear infinite;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(75,108,183,0.4) 0px,
+    rgba(75,108,183,0.4) 20px,
+    rgba(106,17,203,0.4) 20px,
+    rgba(106,17,203,0.4) 40px,
+    rgba(27,40,72,0.4) 40px,
+    rgba(27,40,72,0.4) 60px
+  );
+  background-size: cover;
+  animation: moveBars 20s linear infinite;
   z-index: 1;
-  opacity: 0.6;
+  pointer-events: none;
 }
 
-/* Animate background movement */
-@keyframes moveLines {
+/* Animate diagonal bars */
+@keyframes moveBars {
   0% { transform: translateX(0); }
-  100% { transform: translateX(-66.66%); } /* moves gradient across screen */
+  100% { transform: translateX(-50%); }
 }
