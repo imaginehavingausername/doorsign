@@ -19,23 +19,19 @@ body {
 }
 
 /* --- Content & Centering --- */
-
-/* #content is now a simple container that we can position things inside of. */
 #content {
-    position: relative; /* This is the anchor for the absolute-positioned countdown. */
+    position: relative;
     height: 100%;
     width: 100%;
     text-align: center;
     box-sizing: border-box;
 }
 
-/* --- CHANGE: This new class now handles the centering of the main message. --- */
-/* This ensures the "beebup is..." text is perfectly centered just like it was before. */
 .main-message-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%; /* Take up the full height to center vertically. */
+    height: 100%;
     padding: 20px;
     box-sizing: border-box;
 }
@@ -67,34 +63,30 @@ body {
 
 /* --- Christmas Countdown Timer Styling --- */
 #countdown-container {
-    position: absolute; /* Positioned relative to #content. */
-    bottom: 5vh; /* 5% from the bottom of the screen. */
+    position: absolute;
+    bottom: 3vh; /* Moved slightly lower */
     left: 0;
     right: 0;
     width: 100%;
     color: white;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-    animation: fadeIn 1s ease-in;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+    /* --- CHANGE: Animation removed --- */
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
+/* --- CHANGE: Title made smaller --- */
 .countdown-title {
-    font-size: 3vw;
+    font-size: 2.5vw;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     opacity: 0.9;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .countdown-timer {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 15px; /* Reduced gap */
 }
 
 .time-box {
@@ -102,21 +94,23 @@ body {
     flex-direction: column;
     align-items: center;
     background: rgba(0, 0, 0, 0.2);
-    padding: 10px 15px;
-    border-radius: 10px;
-    min-width: 65px;
+    padding: 5px 10px; /* Reduced padding */
+    border-radius: 8px;
+    min-width: 50px; /* Reduced min-width */
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* --- CHANGE: Numbers made smaller --- */
 .time-box span:first-child {
-    font-size: 5vw;
+    font-size: 4vw;
     font-weight: 700;
-    line-height: 1;
+    line-height: 1.2;
     color: #a7f3d0;
 }
 
+/* --- CHANGE: Labels made smaller --- */
 .time-box .label {
-    font-size: 2vw;
+    font-size: 1.8vw;
     text-transform: uppercase;
     opacity: 0.7;
     font-weight: 400;
