@@ -1,0 +1,54 @@
+/* Full-page layout */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+}
+
+/* Text container */
+.text-container {
+  position: relative;
+  z-index: 2; /* in front of background lines */
+}
+
+/* Lines of text */
+.line {
+  color: white;
+  line-height: 1.2;
+}
+
+.line.small {
+  font-size: 3em;
+}
+
+.line.big {
+  font-size: 5em;
+  font-weight: bold;
+}
+
+/* Background gradient */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%; /* start offscreen */
+  width: 300%; /* long for animation */
+  height: 100%;
+  background: linear-gradient(120deg, #4b6cb7, #182848, #6a11cb);
+  animation: moveLines 15s linear infinite;
+  z-index: 1;
+  opacity: 0.6;
+}
+
+/* Animate background movement */
+@keyframes moveLines {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-66.66%); } /* moves gradient across screen */
+}
