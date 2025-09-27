@@ -4,7 +4,7 @@ html, body {
     width: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden; /* Prevent scrollbars */
+    overflow: hidden; 
 }
 
 /* --- Body Styling and Refreshing Gradient Background --- */
@@ -15,7 +15,7 @@ body {
     /* The Background: Watery, Steamy Gradient */
     background: linear-gradient(-90deg, #f0f8ff, #cfe6f0, #e6f7ff, #b5dceb);
     background-size: 300% 300%;
-    animation: waterFlow 25s ease-in-out infinite; /* Slow, continuous, flowing animation */
+    animation: waterFlow 25s ease-in-out infinite; 
 }
 
 /* Keyframes for the flowing water/steam effect */
@@ -33,28 +33,37 @@ body {
 
 ---
 
-/* --- ABSOLUTE CENTERING BLOCK (This should resolve the issue) --- */
+/* --- ABSOLUTE CENTERING FIX (This is the most reliable method) --- */
 #content {
-    /* 1. Take up the entire screen space */
-    height: 100%;
-    width: 100%;
-
-    /* 2. Use Flexbox to align content */
-    display: flex;
-    justify-content: center; /* Centers horizontally */
-    align-items: center;   /* Centers vertically */
-
+    /* Set positioning context */
+    position: absolute; 
+    
+    /* Move the top-left corner of the element to the center of the screen */
+    top: 50%; 
+    left: 50%;
+    
+    /* Pull the element back by half its own width/height to perfectly center it */
+    transform: translate(-50%, -50%); 
+    
+    /* Ensure no residual flexbox properties interfere, though they aren't needed here */
+    display: block; 
+    
+    /* Maintain full width for responsiveness */
+    width: 100%; 
+    max-width: 90vw; /* Limit for very wide screens */
+    
     text-align: center;
     box-sizing: border-box;
 }
 
 /* The inner container for the lines of text from message.html */
 .text-container {
-    /* Ensure the content is stacked correctly within the center of the screen */
+    /* No special positioning needed here, just for stacking */
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centers the lines themselves if they were different widths */
+    align-items: center; 
     max-width: 90%;
+    margin: 0 auto; /* Ensure it is centered within the #content block */
 }
 
 ---
@@ -71,7 +80,7 @@ body {
 /* 1. The "he is" line */
 .small {
     font-size: 5vw;
-    color: #4a80a8;
+    color: #4a80a8; 
     opacity: 0.8;
 }
 
