@@ -1,121 +1,75 @@
-/* full-page layout */
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-/* dreamy gradient base */
+/* --- Global Body Styling and Gradient Background --- */
 body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  background: linear-gradient(120deg, #12182b 0%, #26305a 40%, #4b2b86 100%);
-  color: #ffffff;
+    /* Full viewport size */
+    width: 100vw;
+    height: 100vh;
+    /* Remove default margins and padding */
+    margin: 0;
+    padding: 0;
+    /* Use a relaxing, sleep-friendly font, fallbacks provided */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #f0f0f0; /* Light text color for contrast */
+    overflow: hidden; /* Hide scrollbars that might appear */
+
+    /* The Moving Gradient: Colors and Animation */
+    /* Colors: Dark Blue -> Deep Purple -> Soft Indigo (Sleepy/Night Sky feel) */
+    background: linear-gradient(-45deg, #1a237e, #4527a0, #283593, #3949ab);
+    background-size: 400% 400%; /* Make the gradient much larger than the screen */
+    animation: gradientShift 20s ease infinite; /* Slow, gentle, 20-second loop */
 }
 
-/* moving diagonal bars (seamless) */
-body::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.55;
-
-  background-image: repeating-linear-gradient(
-    135deg,
-    rgba(95,138,255,0.20) 0px,
-    rgba(95,138,255,0.20) 80px,
-    rgba(110,86,255,0.18) 80px,
-    rgba(110,86,255,0.18) 160px,
-    rgba(72,128,255,0.16) 160px,
-    rgba(72,128,255,0.16) 240px,
-    rgba(57,90,200,0.14) 240px,
-    rgba(57,90,200,0.14) 320px
-  );
-
-  animation: slideBars 18s linear infinite;
-  filter: blur(6px) saturate(120%);
-  mix-blend-mode: overlay;
+/* Keyframes for the gradient animation */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%; /* Shift the gradient across the screen */
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
-/* a faint layer of soft floating haze to smooth edges even more */
-body::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.02), transparent 8%),
-              radial-gradient(circle at 80% 80%, rgba(255,255,255,0.02), transparent 10%);
-  opacity: 0.6;
+/* --- Content & Centering --- */
+/* The main container for the content fetched by index.html */
+#content {
+    display: flex; /* Enable flexbox for centering */
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    height: 100%; /* Take up full height of the body */
+    text-align: center; /* Ensure lines wrap/align correctly */
+    padding: 20px; /* Small padding buffer */
+    box-sizing: border-box; /* Include padding in the element's total width and height */
 }
 
-/* center text and keep it above backgrounds */
+/* The inner container for the lines of text from message.html */
 .text-container {
-  position: relative;
-  z-index: 2;
-  padding: 0 6%;
-  box-sizing: border-box;
-
-  /* stable rendering hints */
-  transform-origin: center center;
-  backface-visibility: hidden;
-  will-change: opacity;
+    /* Use flexbox for vertical stacking */
+    display: flex;
+    flex-direction: column;
+    /* Optional: Max width to ensure it doesn't spread too thin on huge screens */
+    max-width: 90%; 
 }
 
-/* text styling - very readable, scaled for phone */
+/* --- Text Styling and Sizing --- */
 .line {
-  margin: 0;
-  color: #ffffff;
-  text-shadow: 0 6px 18px rgba(10,10,20,0.6), 0 1px 0 rgba(255,255,255,0.02);
-  line-height: 1;
-  letter-spacing: 0.02em;
-
-  /* keep metrics stable: same font-weight for both lines */
-  font-weight: 700;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  display: block;
-  word-break: break-word;
+    margin: 10px 0; /* Vertical spacing between the lines */
+    line-height: 1.1; /* Tighter line spacing */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Soft text shadow for readability */
+    font-weight: 700; /* Bold text */
+    text-transform: uppercase; /* Use all caps for a clear sign look */
 }
 
-/* "he is" — big but smaller than asleep */
-.line.small {
-  font-size: clamp(48px, 10vw, 160px);
-  margin-bottom: 0.12em;
-  opacity: 0.98;
+.small {
+    /* The "he is" line */
+    font-size: 6vw; /* Relative size based on viewport width */
+    opacity: 0.8; /* Slightly deemphasize this line */
 }
 
-/* "asleep" — much larger, emphasis */
-.line.big {
-  font-size: clamp(88px, 22vw, 320px);
-  letter-spacing: -0.02em;
-  opacity: 1;
-}
-
-/* subtle opacity-only breathing so geometry never changes */
-@keyframes breatheOpacity {
-  0%   { opacity: 1; }
-  50%  { opacity: 0.995; }
-  100% { opacity: 1; }
-}
-.text-container { animation: breatheOpacity 10s ease-in-out infinite; }
-
-/* sliding bars animation (seamless because repeating-linear-gradient repeats) */
-@keyframes slideBars {
-  0%   { background-position: 0 0; }
-  100% { background-position: -480px 0; } /* shift by one repeat width */
-}
-
-/* keep content centered if message wraps to multiple lines */
-@media (max-width: 420px) {
-  .text-container { padding: 0 4%; }
+.big {
+    /* The "asleep" line - BIG and center of attention */
+    font-size: 18vw; /* Much larger, taking up the middle of the screen */
+    /* If 18vw is too big for your screen, adjust it down (e.g., 14vw) */
+    margin-top: 0; /* Reduce space above the main word */
 }
