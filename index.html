@@ -1,92 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Door Sign</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-    <style>
-        /* Custom font classes */
-        .font-quicksand {
-            font-family: 'Quicksand', sans-serif;
-        }
-
-        .font-orbitron {
-            font-family: 'Orbitron', sans-serif;
-        }
-        
-        /* Keyframe animation for the "asleep" state */
-        @keyframes pulse-glow {
-            0%, 100% {
-                text-shadow: 0 0 10px rgba(168, 85, 247, 0.4), 0 0 20px rgba(168, 85, 247, 0.3), 0 0 30px rgba(168, 85, 247, 0.2);
-                transform: scale(1);
-            }
-            50% {
-                text-shadow: 0 0 20px rgba(168, 85, 247, 0.7), 0 0 40px rgba(168, 85, 247, 0.5), 0 0 60px rgba(168, 85, 247, 0.3);
-                transform: scale(1.02);
-            }
-        }
-
-        /* Class to apply the animation */
-        .status-asleep {
-            color: #d8b4fe; /* Lighter purple for text */
-            animation: pulse-glow 4s infinite ease-in-out;
-            transition: color 0.5s ease-in-out;
-        }
-
-        /* Default transition for smooth changes */
-        #message {
-            transition: color 0.5s ease-in-out;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Door Sign</title>
+  <style id="dynamic-style">
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: black;
+      color: limegreen;
+      font-size: 3em;
+      font-family: monospace;
+      transition: all 0.5s ease;
+    }
+  </style>
 </head>
-<body class="bg-gray-900 flex items-center justify-center min-h-screen antialiased text-gray-300">
+<body>
+  <div id="message">Loading...</div>
 
-    <div class="text-center p-8">
-        <!-- The message will be displayed here -->
-        <div id="message" class="text-6xl md:text-8xl font-quicksand font-bold tracking-wider uppercase">
-            Loading...
-        </div>
-    </div>
+  <script>
+    async function loadMessage() {
+      try {
+        let res = await fetch("message.txt?time=" + Date.now(), {cache: "no-store"});
+        let text = await res.text();
+        document.getElementById("message").innerText = text;
+      } catch(e) {
+        console.error("Message fetch failed:", e);
+      }
+    }
 
-    <script>
-        const messageDiv = document.getElementById('message');
+    async function loadStyle() {
+      try {
+        let res = await fetch("style.json?time=" + Date.now(), {cache: "no-store"});
+        let json = await res.json();
+        let css = `
+          body {
+            background: ${json.background || "black"};
+            color: ${json.color || "limegreen"};
+            font-size: ${json.fontSize || "3em"};
+            font-family: ${json.fontFamily || "monospace"};
+            transition: all 0.5s ease;
+          }
+          #message {
+            animation: ${json.animation || "none"};
+          }
+          @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+          }
+        `;
+        document.getElementById("dynamic-style").textContent = css;
+      } catch(e) {
+        console.error("Style fetch failed:", e);
+      }
+    }
 
-        async function loadMessage() {
-            try {
-                // Fetch the message from message.txt, appending a timestamp to prevent caching
-                const response = await fetch("message.txt?time=" + Date.now(), { cache: "no-store" });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const text = await response.text();
-                const trimmedText = text.trim().toLowerCase();
-
-                // Update the text content
-                messageDiv.innerText = text.trim();
-
-                // Add or remove the special class based on the content
-                if (trimmedText === 'asleep') {
-                    messageDiv.classList.add('status-asleep');
-                } else {
-                    messageDiv.classList.remove('status-asleep');
-                }
-
-            } catch (e) {
-                console.error("Failed to load message:", e);
-                messageDiv.innerText = "Error";
-                messageDiv.classList.remove('status-asleep');
-            }
-        }
-
-        // Load the message when the page loads
-        loadMessage();
-
-        // Reload the message every 5 seconds
-        setInterval(loadMessage, 5000);
-    </script>
+    // Load immediately, then refresh every 10s
+    loadMessage();
+    loadStyle();
+    setInterval(loadMessage, 10000);
+    setInterval(loadStyle, 10000);
+  </script>
 </body>
 </html>
