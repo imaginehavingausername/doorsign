@@ -1,4 +1,4 @@
-/* --- Global Body Styling and Dynamic Gradient Background --- */
+/* --- Global Body Styling and Focused Gradient Background --- */
 body {
     /* Full viewport size */
     width: 100vw;
@@ -6,27 +6,29 @@ body {
     /* Remove default margins and padding */
     margin: 0;
     padding: 0;
-    /* Use a slightly more energetic, crisp font */
-    font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333333; /* Darker text color for bright background contrast */
+    /* Use a clear, academic font */
+    font-family: 'Roboto', Arial, sans-serif;
+    color: #0d1a26; /* Dark text color for contrast against light background */
     overflow: hidden;
 
-    /* The Dynamic Gradient: Energetic and Bright */
-    /* Colors: Soft Yellow, Pale Orange, Mint Green, and Sky Blue (Active, Morning Feel) */
-    background: linear-gradient(135deg, #fceabb, #f8b500, #a8e063, #56ab2f);
-    background-size: 400% 400%; /* Still large, but shifted faster */
-    animation: vibrantShift 12s ease infinite alternate; /* Faster, more noticeable animation */
+    /* The Background: Clean, Subtle, and Focused */
+    /* Colors: Very light grays and off-whites, with a hint of soothing blue/green (like a clean sheet of paper or whiteboard) */
+    background: linear-gradient(to right bottom, #e0eafc, #eef1f3, #c2e0c2, #d5f0d5);
+    background-size: 300% 300%;
+    animation: focusShift 20s ease-in-out infinite alternate; /* Slow, non-distracting animation */
 }
 
-/* Keyframes for the faster, vibrant shift */
-@keyframes vibrantShift {
+/* Keyframes for the subtle, slow shift (mimicking a very slow, calming flow of thought) */
+@keyframes focusShift {
     0% {
-        background-position: 0% 0%;
+        background-position: 0% 50%;
     }
     100% {
-        background-position: 100% 100%; /* Shift diagonally for a more dynamic look */
+        background-position: 100% 50%;
     }
 }
+
+---
 
 /* --- Content & Centering --- */
 #content {
@@ -46,27 +48,31 @@ body {
     max-width: 90%;
 }
 
+---
+
 /* --- Text Styling and Sizing --- */
 .line {
-    margin: 5px 0; /* Reduced margin for closer lines */
+    margin: 5px 0;
     line-height: 1.0;
-    text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.5); /* Lighter shadow for bright text */
-    font-weight: 900; /* Extra bold for impact */
+    /* A very subtle text shadow, more like a slight glow than a drop shadow */
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+    font-weight: 600; /* Medium-bold for readability */
     text-transform: uppercase;
 }
 
 /* 1. The "he is" line */
 .small {
     /* Text will now read "he is" */
-    font-size: 5vw; /* Slightly scaled down from 6vw to prepare for longer text */
-    color: #4b3e00; /* Very dark gray/almost black */
+    font-size: 5vw;
+    color: #444a59; /* A professional, dark slate-gray */
     opacity: 0.9;
 }
 
-/* 2. The "getting dressed" line (previously "asleep") */
+/* 2. The "doing homework" line (previously "getting dressed") */
 .big {
-    /* Text will now read "getting dressed" */
-    font-size: 10vw; /* Significantly scaled down from 18vw to fit the longer phrase */
-    color: #4b3e00; /* A dark, earthy yellow/brown color that complements the background */
+    /* Text will now read "doing homework" */
+    /* Scaled down further to fit the longest phrase yet ("doing homework") */
+    font-size: 8vw;
+    color: #1a1a1a; /* True black/very dark color for maximum clarity and focus */
     margin-top: 0;
 }
