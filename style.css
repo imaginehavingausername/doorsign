@@ -1,89 +1,80 @@
 /* --- Global Body Styling and Dynamic Radial Gradient Background --- */
 body {
-    /* Full viewport size */
     width: 100vw;
     height: 100vh;
-    /* Remove default margins and padding */
     margin: 0;
     padding: 0;
-    /* Use a relaxing, sleep-friendly font, fallbacks provided */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #f0f0f0; /* Light text color for contrast */
-    overflow: hidden; /* Hide scrollbars that might appear */
-
-    /* The Dynamic Radial Gradient: Breathing Waves Effect */
+    color: #f0f0f0;
+    overflow: hidden;
     background: radial-gradient(circle at center, #28273c 0%, #021027 50%, #0a1b9d 100%);
-    background-size: 300% 300%; /* Larger than screen to enable noticeable shifts */
-    animation: radialShift 25s ease-in-out infinite alternate; /* Slower, more 'breathing' animation */
+    background-size: 300% 300%;
+    animation: radialShift 25s ease-in-out infinite alternate;
 }
 
-/* Keyframes for the dynamic wave/breathing effect */
 @keyframes radialShift {
-    0% {
-        background-position: 0% 50%; /* Start state */
-    }
-    50% {
-        /* Shift the center point and size for the "wave" or "pulse" effect */
-        background-position: 100% 70%;
-    }
-    100% {
-        background-position: 0% 50%; /* Return to start state */
-    }
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 70%; }
+    100% { background-position: 0% 50%; }
 }
 
 /* --- Content & Centering --- */
+
+/* #content is now a simple container that we can position things inside of. */
 #content {
-    display: flex; /* Enable flexbox for centering */
-    justify-content: center; /* Center content horizontally */
-    align-items: center; /* Center content vertically */
-    height: 100%; /* Take up full height of the body */
+    position: relative; /* This is the anchor for the absolute-positioned countdown. */
+    height: 100%;
+    width: 100%;
     text-align: center;
-    padding: 20px;
     box-sizing: border-box;
-    /* Set position to relative so the absolute countdown is positioned within it */
-    position: relative; 
 }
 
-/* The inner container for the lines of text from message.html */
+/* --- CHANGE: This new class now handles the centering of the main message. --- */
+/* This ensures the "beebup is..." text is perfectly centered just like it was before. */
+.main-message-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Take up the full height to center vertically. */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
 .text-container {
     display: flex;
     flex-direction: column;
     max-width: 90%;
 }
 
-/* --- Text Styling and Sizing --- */
+/* --- Text Styling and Sizing (Unchanged) --- */
 .line {
     margin: 10px 0;
     line-height: 1.1;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7); /* Stronger shadow for better visibility against dynamic background */
-    font-weight: 800; /* Extra bold text */
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+    font-weight: 800;
     text-transform: uppercase;
 }
-
 .small {
     font-size: 6vw;
     color: #FFFFFF;
     opacity: 0.85;
 }
-
 .big {
     font-size: 10vw;
     color: #f0f0f0;
     margin-top: 0;
 }
 
-
-/* --- NEW: Christmas Countdown Timer Styling --- */
+/* --- Christmas Countdown Timer Styling --- */
 #countdown-container {
-    position: absolute; /* Position it relative to the #content container */
-    bottom: 5vh; /* Position it 5% from the bottom of the viewport height */
+    position: absolute; /* Positioned relative to #content. */
+    bottom: 5vh; /* 5% from the bottom of the screen. */
     left: 0;
     right: 0;
     width: 100%;
-    text-align: center;
     color: white;
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-    animation: fadeIn 1s ease-in; /* A little fade-in effect */
+    animation: fadeIn 1s ease-in;
 }
 
 @keyframes fadeIn {
@@ -103,7 +94,7 @@ body {
 .countdown-timer {
     display: flex;
     justify-content: center;
-    gap: 20px; /* Space between time boxes */
+    gap: 20px;
 }
 
 .time-box {
@@ -113,22 +104,21 @@ body {
     background: rgba(0, 0, 0, 0.2);
     padding: 10px 15px;
     border-radius: 10px;
-    min-width: 65px; /* Ensures boxes have a consistent minimum width */
+    min-width: 65px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* The number (e.g., 25) */
 .time-box span:first-child {
     font-size: 5vw;
     font-weight: 700;
     line-height: 1;
-    color: #a7f3d0; /* A festive mint green color */
+    color: #a7f3d0;
 }
 
-/* The text label (e.g., Days) */
 .time-box .label {
     font-size: 2vw;
     text-transform: uppercase;
     opacity: 0.7;
     font-weight: 400;
 }
+
