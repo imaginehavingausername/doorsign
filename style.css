@@ -1,20 +1,21 @@
 /* --- Global Body Styling and Refreshing Gradient Background --- */
-body {
-    /* Full viewport size */
-    width: 100vw;
-    height: 100vh;
-    /* Remove default margins and padding */
+/* CRITICAL STEP 1: Ensure both HTML and Body use 100% height */
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
-    /* Use a clean, relaxed font */
+}
+
+body {
+    width: 100vw;
     font-family: 'Helvetica Neue', Arial, sans-serif;
-    color: #0b3447; /* Deep, cool blue text color */
+    color: #0b3447;
     overflow: hidden;
 
     /* The Background: Watery, Steamy Gradient */
     background: linear-gradient(-90deg, #f0f8ff, #cfe6f0, #e6f7ff, #b5dceb);
     background-size: 300% 300%;
-    animation: waterFlow 25s ease-in-out infinite; /* Slow, continuous, flowing animation */
+    animation: waterFlow 25s ease-in-out infinite;
 }
 
 /* Keyframes for the flowing water/steam effect */
@@ -34,14 +35,11 @@ body {
 
 /* --- CONTENT CENTERING BLOCK (The Key to Centering) --- */
 #content {
-    /* 1. Use Flexbox to manage child alignment */
+    /* CRITICAL STEP 2: Use Flexbox and full height to center content */
     display: flex;
-    /* 2. Center content horizontally */
-    justify-content: center;
-    /* 3. Center content vertically */
-    align-items: center;
-    /* 4. Ensure the container takes up the full space */
-    height: 100%; 
+    justify-content: center; /* Centers horizontally */
+    align-items: center;   /* Centers vertically */
+    height: 100%;          /* Must take up 100% of the body height */
     
     text-align: center;
     padding: 20px;
@@ -50,7 +48,6 @@ body {
 
 /* The inner container for the lines of text from message.html */
 .text-container {
-    /* Use flexbox to stack the lines vertically */
     display: flex;
     flex-direction: column;
     max-width: 90%;
