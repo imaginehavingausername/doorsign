@@ -12,7 +12,6 @@ body {
     overflow: hidden; /* Hide scrollbars that might appear */
 
     /* The Dynamic Radial Gradient: Breathing Waves Effect */
-    /* Colors: Deep Sapphire, Midnight Purple, and a hint of soft Teal. */
     background: radial-gradient(circle at center, #28273c 0%, #021027 50%, #0a1b9d 100%);
     background-size: 300% 300%; /* Larger than screen to enable noticeable shifts */
     animation: radialShift 25s ease-in-out infinite alternate; /* Slower, more 'breathing' animation */
@@ -41,6 +40,8 @@ body {
     text-align: center;
     padding: 20px;
     box-sizing: border-box;
+    /* Set position to relative so the absolute countdown is positioned within it */
+    position: relative; 
 }
 
 /* The inner container for the lines of text from message.html */
@@ -59,16 +60,75 @@ body {
     text-transform: uppercase;
 }
 
-/* 1. The "he is" line (Now set to bright white as requested) */
 .small {
     font-size: 6vw;
-    color: #FFFFFF; /* ⭐️ This sets the 'he is' line to white ⭐️ */
-    opacity: 0.85; /* Keep it slightly less prominent than 'asleep' */
+    color: #FFFFFF;
+    opacity: 0.85;
 }
 
-/* 2. The "asleep" line - BIG and center of attention */
 .big {
     font-size: 10vw;
-    color: #f0f0f0; /* Keep the 'asleep' line a soft off-white/light gray */
+    color: #f0f0f0;
     margin-top: 0;
+}
+
+
+/* --- NEW: Christmas Countdown Timer Styling --- */
+#countdown-container {
+    position: absolute; /* Position it relative to the #content container */
+    bottom: 5vh; /* Position it 5% from the bottom of the viewport height */
+    left: 0;
+    right: 0;
+    width: 100%;
+    text-align: center;
+    color: white;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+    animation: fadeIn 1s ease-in; /* A little fade-in effect */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.countdown-title {
+    font-size: 3vw;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.9;
+    margin-bottom: 15px;
+}
+
+.countdown-timer {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Space between time boxes */
+}
+
+.time-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px 15px;
+    border-radius: 10px;
+    min-width: 65px; /* Ensures boxes have a consistent minimum width */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* The number (e.g., 25) */
+.time-box span:first-child {
+    font-size: 5vw;
+    font-weight: 700;
+    line-height: 1;
+    color: #a7f3d0; /* A festive mint green color */
+}
+
+/* The text label (e.g., Days) */
+.time-box .label {
+    font-size: 2vw;
+    text-transform: uppercase;
+    opacity: 0.7;
+    font-weight: 400;
 }
