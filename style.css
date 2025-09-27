@@ -13,7 +13,7 @@ body {
 
     /* The Dynamic Radial Gradient: Breathing Waves Effect */
     /* Colors: Deep Sapphire, Midnight Purple, and a hint of soft Teal. */
-    background: radial-gradient(circle at center, #0bcd4b 0%, #021027 50%, #0a1b9d 100%);
+    background: radial-gradient(circle at center, #28273c 0%, #021027 50%, #0a1b9d 100%);
     background-size: 300% 300%; /* Larger than screen to enable noticeable shifts */
     animation: radialShift 25s ease-in-out infinite alternate; /* Slower, more 'breathing' animation */
 }
