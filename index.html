@@ -10,7 +10,6 @@
   <div id="content">Loading...</div>
 
   <script>
-    // This variable holds our timer, so we can stop and start it cleanly.
     let countdownInterval;
 
     async function loadHTML() {
@@ -18,9 +17,9 @@
         let res = await fetch('message.html?time=' + Date.now(), {cache: "no-store"});
         let html = await res.text();
         document.getElementById('content').innerHTML = html;
-        
-        // Give the browser a millisecond to process the new HTML before we run the timer script.
-        setTimeout(startCountdown, 1);
+
+        // Wait until next browser paint so new elements exist
+        requestAnimationFrame(() => startCountdown());
 
       } catch(e) {
         console.error("HTML fetch failed:", e);
@@ -38,61 +37,47 @@
     }
 
     function startCountdown() {
-      // First, we always clear any old timer that might be running.
-      if (countdownInterval) {
-        clearInterval(countdownInterval);
-      }
+      if (countdownInterval) clearInterval(countdownInterval);
 
-      // --- THE FIX ---
-      // Now, we grab the timer elements from the newly loaded HTML.
       const daysEl = document.getElementById('days');
       const hoursEl = document.getElementById('hours');
       const minutesEl = document.getElementById('minutes');
       const secondsEl = document.getElementById('seconds');
 
-      // We ONLY proceed if all those elements were successfully found.
-      // This prevents errors if the script runs before the HTML is ready.
       if (!daysEl || !hoursEl || !minutesEl || !secondsEl) {
         console.error("Countdown elements not found. Timer will not start.");
-        return; // Stop the function here.
+        return;
       }
 
-      const countdown = () => {
+      const update = () => {
         const now = new Date();
-        const christmasYear = now.getFullYear();
-        let christmasDate = new Date(`December 25, ${christmasYear} 00:00:00`);
-
-        // If it's already past Christmas, count down to next year's.
+        let christmasDate = new Date(`December 25, ${now.getFullYear()} 00:00:00`);
         if (now > christmasDate) {
-          christmasDate = new Date(`December 25, ${christmasYear + 1} 00:00:00`);
+          christmasDate = new Date(`December 25, ${now.getFullYear() + 1} 00:00:00`);
         }
 
-        const totalSeconds = (christmasDate - now) / 1000;
+        const totalSeconds = Math.floor((christmasDate - now) / 1000);
 
-        const days = Math.floor(totalSeconds / 3600 / 24);
-        const hours = Math.floor(totalSeconds / 3600) % 24;
-        const minutes = Math.floor(totalSeconds / 60) % 60;
-        const seconds = Math.floor(totalSeconds) % 60;
-        
-        // Update the numbers on the screen.
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
         daysEl.innerText = days;
         hoursEl.innerText = String(hours).padStart(2, '0');
         minutesEl.innerText = String(minutes).padStart(2, '0');
         secondsEl.innerText = String(seconds).padStart(2, '0');
       };
-      
-      countdown(); // Run once immediately.
-      countdownInterval = setInterval(countdown, 1000); // Then update every second.
+
+      update();
+      countdownInterval = setInterval(update, 1000);
     }
 
-    // Initial load
     loadHTML();
     loadCSS();
 
-    // Refresh content every 10 seconds
     setInterval(loadHTML, 10000);
     setInterval(loadCSS, 10000);
   </script>
 </body>
 </html>
-
