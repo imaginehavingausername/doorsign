@@ -1,6 +1,7 @@
 /* --- CRITICAL FIX: Ensure HTML and Body use full height and remove padding/margin --- */
 html, body {
-    height: 100%;
+    /* Forcing the height to 100% of the viewport (vh) */
+    height: 100vh;
     width: 100%;
     margin: 0;
     padding: 0;
@@ -9,6 +10,11 @@ html, body {
 
 /* --- Body Styling and Refreshing Gradient Background --- */
 body {
+    /* Set body to be a flex container to aid in content centering */
+    display: flex;
+    justify-content: center; /* Center content within body horizontally */
+    align-items: center;   /* Center content within body vertically */
+    
     font-family: 'Helvetica Neue', Arial, sans-serif;
     color: #0b3447;
 
@@ -33,24 +39,11 @@ body {
 
 ---
 
-/* --- ABSOLUTE CENTERING FIX (This is the most reliable method) --- */
+/* --- CONTENT CENTERING BLOCK: Centering is now mainly done by the BODY tag --- */
 #content {
-    /* Set positioning context */
-    position: absolute; 
-    
-    /* Move the top-left corner of the element to the center of the screen */
-    top: 50%; 
-    left: 50%;
-    
-    /* Pull the element back by half its own width/height to perfectly center it */
-    transform: translate(-50%, -50%); 
-    
-    /* Ensure no residual flexbox properties interfere, though they aren't needed here */
-    display: block; 
-    
-    /* Maintain full width for responsiveness */
-    width: 100%; 
-    max-width: 90vw; /* Limit for very wide screens */
+    /* No need for explicit flex centering here, as the body handles it. */
+    /* Ensure it doesn't take up excessive width */
+    max-width: 90vw; 
     
     text-align: center;
     box-sizing: border-box;
@@ -58,12 +51,11 @@ body {
 
 /* The inner container for the lines of text from message.html */
 .text-container {
-    /* No special positioning needed here, just for stacking */
     display: flex;
     flex-direction: column;
     align-items: center; 
     max-width: 90%;
-    margin: 0 auto; /* Ensure it is centered within the #content block */
+    /* margin: 0 auto; removed as body/content centering should make it unnecessary */
 }
 
 ---
