@@ -7,7 +7,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #f0f0f0;
     overflow: hidden;
-    background: radial-gradient(circle at center, #434839 0%, #021027 50%, #15ff49 100%);
+    background: radial-gradient(circle at center, #434839 0%, #0062ff 50%, #15ff49 100%);
     background-size: 300% 300%;
     animation: radialShift 25s ease-in-out infinite alternate;
 }
