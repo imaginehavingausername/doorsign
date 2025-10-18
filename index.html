@@ -1,122 +1,168 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Message + Christmas Countdown (fade loop)</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Door Sign</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        /* --- Screen containers and transitions --- */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            opacity: 1;
+            /* CHANGE: Made the fade transition longer and smoother */
+            transition: opacity 1.5s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #f0f0f0;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        .screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- Original Message Screen Styling --- */
+        #message-screen {
+            background: radial-gradient(circle at center, #434839 0%, #0062ff 50%, #15ff49 100%);
+            background-size: 300% 300%;
+            animation: radialShift 25s ease-in-out infinite alternate;
+        }
+
+        @keyframes radialShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 70%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- New Christmas Screen Styling --- */
+        #christmas-screen {
+            background: radial-gradient(ellipse at bottom, #165B33 0%, #D4AF37 50%, #C41E3A 100%);
+            background-size: 200% 200%;
+            animation: christmasGlow 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes christmasGlow {
+          0% { background-position: 0% 80%; }
+          50% { background-position: 100% 20%; }
+          100% { background-position: 0% 80%; }
+        }
+    </style>
 </head>
-<body>
-  <div class="stage" id="stage">
-    <!-- FRONT: message.html loaded here -->
-    <div class="screen screen-front visible" id="screen-front" aria-live="polite">
-      <div class="content" id="front-content">Loading message…</div>
+<body class="bg-black">
+
+    <!-- Screen for the main message - content is now loaded dynamically -->
+    <div id="message-screen" class="screen">
+        <!-- Loading message content... -->
     </div>
 
-    <!-- BACK: Christmas countdown (bigger, centered) -->
-    <div class="screen screen-back" id="screen-back" aria-hidden="true">
-      <div class="countdown-wrap" id="countdown-wrap">
-        <div class="countdown-title">Christmas In</div>
-        <div class="countdown-row">
-          <div class="time-box"><span id="days">0</span><span class="label">Days</span></div>
-          <div class="time-box"><span id="hours">00</span><span class="label">Hours</span></div>
-          <div class="time-box"><span id="minutes">00</span><span class="label">Mins</span></div>
-          <div class="time-box"><span id="seconds">00</span><span class="label">Secs</span></div>
+    <!-- Screen for the Christmas Countdown -->
+    <div id="christmas-screen" class="screen hidden">
+        <div class="text-center">
+            <div class="text-[5vw] md:text-[4vw] font-bold uppercase tracking-wider opacity-90 mb-4">Christmas In</div>
+            <div class="flex justify-center gap-4 md:gap-8">
+                <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                    <span id="days" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
+                    <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Days</span>
+                </div>
+                <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                    <span id="hours" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
+                    <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Hours</span>
+                </div>
+                <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                    <span id="minutes" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
+                    <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Mins</span>
+                </div>
+                <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                    <span id="seconds" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
+                    <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Secs</span>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 
-<script>
-/* -------------------------
-  Configuration
---------------------------*/
-const MESSAGE_FETCH_INTERVAL_MS = 30000; // fetch message.html every 30s
-const VISIBLE_MS = 5000;                 // how long each screen stays visible
-const FADE_MS = 800;                     // fade duration (must match CSS var --fade)
-document.documentElement.style.setProperty('--fade', `${FADE_MS}ms`);
+    <script>
+        const messageScreen = document.getElementById('message-screen');
+        const christmasScreen = document.getElementById('christmas-screen');
+        let countdownInterval;
 
-/* -------------------------
-  Fetch and inject message.html (no-cache so updates appear)
---------------------------*/
-async function fetchMessage() {
-  try {
-    const res = await fetch('message.html', { cache: 'no-store' });
-    if (!res.ok) throw new Error('Fetch failed');
-    const html = await res.text();
-    document.getElementById('front-content').innerHTML = html;
-  } catch (err) {
-    console.warn('Could not load message.html:', err);
-  }
-}
+        // --- NEW: Function to load message from external file ---
+        async function loadMessage() {
+            try {
+                // Add a timestamp to the URL to prevent the browser from caching the file
+                const response = await fetch('message.html?t=' + new Date().getTime());
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const html = await response.text();
+                messageScreen.innerHTML = html;
+            } catch (error) {
+                console.error('Failed to fetch message:', error);
+                messageScreen.innerHTML = `<div class="text-center">Could not load message.</div>`;
+            }
+        }
 
-/* -------------------------
-  Countdown logic (Christmas)
---------------------------*/
-function startCountdown() {
-  const daysEl = document.getElementById('days');
-  const hoursEl = document.getElementById('hours');
-  const minsEl = document.getElementById('minutes');
-  const secsEl = document.getElementById('seconds');
+        function startCountdown() {
+            if (countdownInterval) clearInterval(countdownInterval);
 
-  function update() {
-    const now = new Date();
-    let target = new Date(`December 25, ${now.getFullYear()} 00:00:00`);
-    if (now > target) target = new Date(`December 25, ${now.getFullYear() + 1} 00:00:00`);
-    const totalSeconds = Math.max(0, Math.floor((target - now) / 1000));
-    const days = Math.floor(totalSeconds / 86400);
-    const hours = Math.floor((totalSeconds % 86400) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    daysEl.textContent = days;
-    hoursEl.textContent = String(hours).padStart(2, '0');
-    minsEl.textContent = String(minutes).padStart(2, '0');
-    secsEl.textContent = String(seconds).padStart(2, '0');
-  }
+            const daysEl = document.getElementById('days');
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
 
-  update();
-  setInterval(update, 1000);
-}
+            const update = () => {
+                const now = new Date();
+                let christmasDate = new Date(`December 25, ${now.getFullYear()} 00:00:00`);
+                if (now > christmasDate) {
+                    christmasDate = new Date(`December 25, ${now.getFullYear() + 1} 00:00:00`);
+                }
+                const totalSeconds = Math.floor((christmasDate - now) / 1000);
 
-/* -------------------------
-  Fade orchestration loop
---------------------------*/
-function showFront() {
-  document.getElementById('screen-front').classList.add('visible');
-  document.getElementById('screen-front').setAttribute('aria-hidden','false');
-  document.getElementById('screen-back').classList.remove('visible');
-  document.getElementById('screen-back').setAttribute('aria-hidden','true');
-}
+                daysEl.innerText = Math.floor(totalSeconds / 86400);
+                hoursEl.innerText = String(Math.floor((totalSeconds % 86400) / 3600)).padStart(2, '0');
+                minutesEl.innerText = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+                secondsEl.innerText = String(totalSeconds % 60).padStart(2, '0');
+            };
 
-function showBack() {
-  document.getElementById('screen-back').classList.add('visible');
-  document.getElementById('screen-back').setAttribute('aria-hidden','false');
-  document.getElementById('screen-front').classList.remove('visible');
-  document.getElementById('screen-front').setAttribute('aria-hidden','true');
-}
+            update();
+            countdownInterval = setInterval(update, 1000);
+        }
 
-async function runLoop() {
-  // initial fetch & start countdown
-  await fetchMessage();
-  startCountdown();
-  // refresh message every MESSAGE_FETCH_INTERVAL_MS
-  setInterval(fetchMessage, MESSAGE_FETCH_INTERVAL_MS);
+        function cycleScreens() {
+            messageScreen.classList.remove('hidden');
+            christmasScreen.classList.add('hidden');
 
-  // ensure initial state is front visible
-  showFront();
+            setTimeout(() => {
+                messageScreen.classList.add('hidden');
+                christmasScreen.classList.remove('hidden');
+                
+                setTimeout(cycleScreens, 5000);
+            }, 5000);
+        }
 
-  // loop forever: front -> fade -> back -> fade -> repeat
-  while (true) {
-    await new Promise(r => setTimeout(r, VISIBLE_MS)); // front visible
-    showBack();                                       // fade to back (CSS handles transition)
-    await new Promise(r => setTimeout(r, VISIBLE_MS + FADE_MS)); // wait for fade + back visible
-    showFront();                                      // fade back to front
-    await new Promise(r => setTimeout(r, VISIBLE_MS + FADE_MS)); // wait before next flip
-  }
-}
+        // --- Start everything ---
+        loadMessage(); // Load the message initially
+        setInterval(loadMessage, 10000); // And check for a new one every 10 seconds
 
-/* start everything */
-runLoop();
-</script>
+        startCountdown();
+        cycleScreens();
+    </script>
 </body>
 </html>
+
