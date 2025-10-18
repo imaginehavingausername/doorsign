@@ -7,101 +7,196 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="stage">
-
-    <!-- SCREEN: Front (your message) -->
-    <div class="screen screen-front">
-      <div class="main-message-container">
-        <div class="text-container">
-          <div class="line small">beebup is</div>
-          <div class="line big">somewhere</div>
-          <!-- add more lines if you want -->
-        </div>
-      </div>
+  <div class="stage" id="stage">
+    <!-- FRONT: message.html will be loaded into this container -->
+    <div class="screen screen-front" id="screen-front">
+      <div class="content" id="front-content">Loading message...</div>
     </div>
 
-    <!-- SCREEN: Back (big centered Christmas countdown) -->
-    <div class="screen screen-back">
-      <div id="countdown-big">
+    <!-- BACK: Christmas countdown (separate background so triangles pop) -->
+    <div class="screen screen-back" id="screen-back" aria-hidden="true">
+      <div class="countdown-wrap">
         <div class="countdown-title">Christmas In</div>
-        <div class="countdown-timer">
-            <div class="time-box">
-                <span id="days">0</span>
-                <span class="label">Days</span>
-            </div>
-            <div class="time-box">
-                <span id="hours">00</span>
-                <span class="label">Hours</span>
-            </div>
-            <div class="time-box">
-                <span id="minutes">00</span>
-                <span class="label">Mins</span>
-            </div>
-            <div class="time-box">
-                <span id="seconds">00</span>
-                <span class="label">Secs</span>
-            </div>
+        <div class="countdown-row">
+          <div class="time-box"><span id="days">0</span><span class="label">Days</span></div>
+          <div class="time-box"><span id="hours">00</span><span class="label">Hours</span></div>
+          <div class="time-box"><span id="minutes">00</span><span class="label">Mins</span></div>
+          <div class="time-box"><span id="seconds">00</span><span class="label">Secs</span></div>
         </div>
       </div>
     </div>
 
-    <!-- overlay tiles that perform the flip reveal -->
-    <div class="tiles" id="tiles"></div>
+    <!-- overlay grid of tiles (built by JS) -->
+    <div class="tiles" id="tiles" aria-hidden="true"></div>
   </div>
 
 <script>
-/* -------------------------
-   tiny helper: build tile grid
-   - change cols/rows to tweak density
-   - each tile receives --i which CSS uses to stagger
---------------------------*/
-(function createTiles(){
-  const tilesEl = document.getElementById('tiles');
-  const cols = 16;   // try 12..24
-  const rows = 9;    // try 6..12
-  // set CSS grid counts so tiles container matches
-  tilesEl.style.setProperty('--cols', cols);
-  tilesEl.style.setProperty('--rows', rows);
+/* CONFIG (tweak these) */
+const MESSAGE_FETCH_INTERVAL_MS = 30000; // fetch message.html every 30s
+const VISIBLE_MS = 5000;                 // show each screen for 5s
+const FLIP_DURATION_MS = 1100;           // duration of tile flip animation (per tile window)
+const COLS = 16;                         // tile grid columns
+const ROWS = 9;                          // tile grid rows
+const STAGGER_MS = 45;                   // per-tile stagger (ms)
 
-  for(let r=0;r<rows;r++){
-    for(let c=0;c<cols;c++){
+/* Sync CSS vars with JS values so timing matches exactly */
+document.documentElement.style.setProperty('--flip-duration', `${FLIP_DURATION_MS}ms`);
+document.documentElement.style.setProperty('--stagger', `${STAGGER_MS}ms`);
+document.documentElement.style.setProperty('--cols', COLS);
+document.documentElement.style.setProperty('--rows', ROWS);
+
+/* Build the triangular tile grid.
+   Each tile gets --i (index) which CSS uses to stagger its animation start.
+*/
+function buildTiles() {
+  const tilesEl = document.getElementById('tiles');
+  tilesEl.innerHTML = '';
+  tilesEl.style.setProperty('--cols', COLS);
+
+  let idx = 0;
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
       const t = document.createElement('div');
       t.className = 'tile';
-      t.style.setProperty('--i', (r*cols + c));
+      t.style.setProperty('--i', idx);
       if ((r + c) % 2 === 0) t.classList.add('tile-alt');
       tilesEl.appendChild(t);
+      idx++;
     }
   }
-})();
+}
 
-/* -------------------------
-   countdown logic (updates every second)
-   keeps the numbers accurate even while CSS handles the screen swapping
---------------------------*/
-(function startCountdown(){
-  const daysEl = document.getElementById('days');
-  const hoursEl = document.getElementById('hours');
-  const minutesEl = document.getElementById('minutes');
-  const secondsEl = document.getElementById('seconds');
+/* Helper: fetch message.html and inject into front content.
+   This allows you to edit message.html on the server and have the page pick it up without reload.
+*/
+async function fetchMessage() {
+  try {
+    const res = await fetch('message.html', {cache: 'no-store'});
+    if (!res.ok) throw new Error('Failed to fetch message');
+    const html = await res.text();
+    document.getElementById('front-content').innerHTML = html;
+  } catch (err) {
+    console.warn('message fetch failed:', err);
+  }
+}
+
+/* Countdown logic for Christmas (updates every second) */
+function startCountdown() {
+  const dEl = document.getElementById('days');
+  const hEl = document.getElementById('hours');
+  const mEl = document.getElementById('minutes');
+  const sEl = document.getElementById('seconds');
 
   function update() {
     const now = new Date();
-    let christmas = new Date(`December 25, ${now.getFullYear()} 00:00:00`);
-    if (now > christmas) christmas = new Date(`December 25, ${now.getFullYear()+1} 00:00:00`);
-    const totalSeconds = Math.max(0, Math.floor((christmas - now) / 1000));
-    const days = Math.floor(totalSeconds / 86400);
-    const hours = Math.floor((totalSeconds % 86400) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    if (daysEl) daysEl.innerText = days;
-    if (hoursEl) hoursEl.innerText = String(hours).padStart(2,'0');
-    if (minutesEl) minutesEl.innerText = String(minutes).padStart(2,'0');
-    if (secondsEl) secondsEl.innerText = String(seconds).padStart(2,'0');
+    let target = new Date(`December 25, ${now.getFullYear()} 00:00:00`);
+    if (now > target) target = new Date(`December 25, ${now.getFullYear()+1} 00:00:00`);
+    const sec = Math.max(0, Math.floor((target - now) / 1000));
+    const days = Math.floor(sec / 86400);
+    const hours = Math.floor((sec % 86400) / 3600);
+    const mins = Math.floor((sec % 3600) / 60);
+    const secs = sec % 60;
+    dEl.textContent = days;
+    hEl.textContent = String(hours).padStart(2,'0');
+    mEl.textContent = String(mins).padStart(2,'0');
+    sEl.textContent = String(secs).padStart(2,'0');
   }
 
   update();
   setInterval(update, 1000);
-})();
+}
+
+/* Flip orchestration:
+   - We add a class to tiles to start the forward/back animations.
+   - We compute the total flip time (max stagger + flip duration) to know when to swap screens.
+*/
+function msTotalFlipTime() {
+  const totalTiles = COLS * ROWS;
+  const maxDelay = (totalTiles - 1) * STAGGER_MS;
+  return maxDelay + FLIP_DURATION_MS + 40; // small fudge
+}
+
+function showFront() {
+  document.getElementById('screen-front').style.opacity = '1';
+  document.getElementById('screen-front').setAttribute('aria-hidden','false');
+  document.getElementById('screen-back').style.opacity = '0';
+  document.getElementById('screen-back').setAttribute('aria-hidden','true');
+}
+
+function showBack() {
+  document.getElementById('screen-front').style.opacity = '0';
+  document.getElementById('screen-front').setAttribute('aria-hidden','true');
+  document.getElementById('screen-back').style.opacity = '1';
+  document.getElementById('screen-back').setAttribute('aria-hidden','false');
+}
+
+/* flip forward (message -> countdown) */
+function flipToBack() {
+  const tiles = document.getElementById('tiles');
+  tiles.classList.remove('flip-back','flipped');
+  // trigger reflow to restart animation
+  // eslint-disable-next-line no-unused-expressions
+  tiles.offsetHeight;
+  tiles.classList.add('flip-forward','playing');
+  // after animations finish, mark tiles as flipped and show back screen
+  setTimeout(() => {
+    tiles.classList.remove('flip-forward','playing');
+    tiles.classList.add('flipped');
+    showBack();
+  }, msTotalFlipTime());
+}
+
+/* flip back (countdown -> message) */
+function flipToFront() {
+  const tiles = document.getElementById('tiles');
+  tiles.classList.remove('flip-forward','flipped');
+  // restart
+  // eslint-disable-next-line no-unused-expressions
+  tiles.offsetHeight;
+  tiles.classList.add('flip-back','playing');
+  setTimeout(() => {
+    tiles.classList.remove('flip-back','playing');
+    // remove flipped state (back to 0deg)
+    tiles.classList.remove('flipped');
+    showFront();
+  }, msTotalFlipTime());
+}
+
+/* The main loop:
+   - show front for VISIBLE_MS
+   - trigger forward flip
+   - wait flip time + small buffer, show back for VISIBLE_MS
+   - trigger back flip
+   - repeat
+*/
+async function runLoop() {
+  const tiles = document.getElementById('tiles');
+  buildTiles();
+  await fetchMessage();
+  startCountdown();
+  showFront();
+
+  // periodic message fetch
+  setInterval(fetchMessage, MESSAGE_FETCH_INTERVAL_MS);
+
+  // orchestration loop:
+  async function loop() {
+    // front visible
+    await new Promise(r => setTimeout(r, VISIBLE_MS));
+    // flip to back
+    flipToBack();
+    // wait for flip to complete + showBack visible time
+    await new Promise(r => setTimeout(r, msTotalFlipTime() + 20 + VISIBLE_MS));
+    // flip back
+    flipToFront();
+    // wait flip to finish then loop repeats (we already waited VISIBLE_MS for front before)
+    await new Promise(r => setTimeout(r, msTotalFlipTime() + 20));
+    loop();
+  }
+  loop();
+}
+
+runLoop();
 </script>
 </body>
 </html>
