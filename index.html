@@ -1,83 +1,107 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Door Sign</title>
-  <style id="dynamic-style"></style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Door Sign — Triangle Flip Cycle</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="content">Loading...</div>
+  <div class="stage">
 
-  <script>
-    let countdownInterval;
+    <!-- SCREEN: Front (your message) -->
+    <div class="screen screen-front">
+      <div class="main-message-container">
+        <div class="text-container">
+          <div class="line small">beebup is</div>
+          <div class="line big">somewhere</div>
+          <!-- add more lines if you want -->
+        </div>
+      </div>
+    </div>
 
-    async function loadHTML() {
-      try {
-        let res = await fetch('message.html?time=' + Date.now(), {cache: "no-store"});
-        let html = await res.text();
-        document.getElementById('content').innerHTML = html;
+    <!-- SCREEN: Back (big centered Christmas countdown) -->
+    <div class="screen screen-back">
+      <div id="countdown-big">
+        <div class="countdown-title">Christmas In</div>
+        <div class="countdown-timer">
+            <div class="time-box">
+                <span id="days">0</span>
+                <span class="label">Days</span>
+            </div>
+            <div class="time-box">
+                <span id="hours">00</span>
+                <span class="label">Hours</span>
+            </div>
+            <div class="time-box">
+                <span id="minutes">00</span>
+                <span class="label">Mins</span>
+            </div>
+            <div class="time-box">
+                <span id="seconds">00</span>
+                <span class="label">Secs</span>
+            </div>
+        </div>
+      </div>
+    </div>
 
-        // Wait until next browser paint so new elements exist
-        requestAnimationFrame(() => startCountdown());
+    <!-- overlay tiles that perform the flip reveal -->
+    <div class="tiles" id="tiles"></div>
+  </div>
 
-      } catch(e) {
-        console.error("HTML fetch failed:", e);
-      }
+<script>
+/* -------------------------
+   tiny helper: build tile grid
+   - change cols/rows to tweak density
+   - each tile receives --i which CSS uses to stagger
+--------------------------*/
+(function createTiles(){
+  const tilesEl = document.getElementById('tiles');
+  const cols = 16;   // try 12..24
+  const rows = 9;    // try 6..12
+  // set CSS grid counts so tiles container matches
+  tilesEl.style.setProperty('--cols', cols);
+  tilesEl.style.setProperty('--rows', rows);
+
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const t = document.createElement('div');
+      t.className = 'tile';
+      t.style.setProperty('--i', (r*cols + c));
+      if ((r + c) % 2 === 0) t.classList.add('tile-alt');
+      tilesEl.appendChild(t);
     }
+  }
+})();
 
-    async function loadCSS() {
-      try {
-        let res = await fetch('style.css?time=' + Date.now(), {cache: "no-store"});
-        let css = await res.text();
-        document.getElementById('dynamic-style').textContent = css;
-      } catch(e) {
-        console.error("CSS fetch failed:", e);
-      }
-    }
+/* -------------------------
+   countdown logic (updates every second)
+   keeps the numbers accurate even while CSS handles the screen swapping
+--------------------------*/
+(function startCountdown(){
+  const daysEl = document.getElementById('days');
+  const hoursEl = document.getElementById('hours');
+  const minutesEl = document.getElementById('minutes');
+  const secondsEl = document.getElementById('seconds');
 
-    function startCountdown() {
-      if (countdownInterval) clearInterval(countdownInterval);
+  function update() {
+    const now = new Date();
+    let christmas = new Date(`December 25, ${now.getFullYear()} 00:00:00`);
+    if (now > christmas) christmas = new Date(`December 25, ${now.getFullYear()+1} 00:00:00`);
+    const totalSeconds = Math.max(0, Math.floor((christmas - now) / 1000));
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    if (daysEl) daysEl.innerText = days;
+    if (hoursEl) hoursEl.innerText = String(hours).padStart(2,'0');
+    if (minutesEl) minutesEl.innerText = String(minutes).padStart(2,'0');
+    if (secondsEl) secondsEl.innerText = String(seconds).padStart(2,'0');
+  }
 
-      const daysEl = document.getElementById('days');
-      const hoursEl = document.getElementById('hours');
-      const minutesEl = document.getElementById('minutes');
-      const secondsEl = document.getElementById('seconds');
-
-      if (!daysEl || !hoursEl || !minutesEl || !secondsEl) {
-        console.error("Countdown elements not found. Timer will not start.");
-        return;
-      }
-
-      const update = () => {
-        const now = new Date();
-        let christmasDate = new Date(`December 25, ${now.getFullYear()} 00:00:00`);
-        if (now > christmasDate) {
-          christmasDate = new Date(`December 25, ${now.getFullYear() + 1} 00:00:00`);
-        }
-
-        const totalSeconds = Math.floor((christmasDate - now) / 1000);
-
-        const days = Math.floor(totalSeconds / 86400);
-        const hours = Math.floor((totalSeconds % 86400) / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-
-        daysEl.innerText = days;
-        hoursEl.innerText = String(hours).padStart(2, '0');
-        minutesEl.innerText = String(minutes).padStart(2, '0');
-        secondsEl.innerText = String(seconds).padStart(2, '0');
-      };
-
-      update();
-      countdownInterval = setInterval(update, 1000);
-    }
-
-    loadHTML();
-    loadCSS();
-
-    setInterval(loadHTML, 10000);
-    setInterval(loadCSS, 10000);
-  </script>
+  update();
+  setInterval(update, 1000);
+})();
+</script>
 </body>
 </html>
