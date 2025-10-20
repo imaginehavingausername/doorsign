@@ -13,6 +13,8 @@
             font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
             margin: 0;
+            /* Added transition for smooth background color change */
+            transition: background-color 1.5s ease;
         }
 
         /* --- Screen containers and transitions --- */
@@ -23,7 +25,6 @@
             width: 100vw;
             height: 100vh;
             opacity: 1;
-            /* CHANGE: Made the fade transition longer and smoother */
             transition: opacity 1.5s ease-in-out;
             display: flex;
             justify-content: center;
@@ -51,7 +52,7 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* --- New Christmas Screen Styling --- */
+        /* --- Christmas Screen Styling --- */
         #christmas-screen {
             background: radial-gradient(ellipse at bottom, #C41E3A 0%, #165B33 50%, #FFFFFF 100%);
             background-size: 200% 200%;
@@ -63,46 +64,56 @@
           50% { background-position: 100% 20%; }
           100% { background-position: 0% 80%; }
         }
+        
+        /* --- NEW: Simple class to hide the content wrapper --- */
+        .content-hidden {
+            display: none;
+        }
     </style>
 </head>
 <body class="bg-black">
+    
+    <!-- NEW: A wrapper around all content that can be hidden during sleep time -->
+    <div id="content-wrapper">
+        <!-- Screen for the main message - content is now loaded dynamically -->
+        <div id="message-screen" class="screen">
+            <!-- Loading message content... -->
+        </div>
 
-    <!-- Screen for the main message - content is now loaded dynamically -->
-    <div id="message-screen" class="screen">
-        <!-- Loading message content... -->
-    </div>
-
-    <!-- Screen for the Christmas Countdown -->
-    <div id="christmas-screen" class="screen hidden">
-        <div class="text-center">
-            <div class="text-[5vw] md:text-[4vw] font-bold uppercase tracking-wider opacity-90 mb-4">Christmas In</div>
-            <div class="flex justify-center gap-4 md:gap-8">
-                <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
-                    <span id="days" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
-                    <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Days</span>
-                </div>
-                <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
-                    <span id="hours" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
-                    <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Hours</span>
-                </div>
-                <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
-                    <span id="minutes" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
-                    <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Mins</span>
-                </div>
-                <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
-                    <span id="seconds" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
-                    <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Secs</span>
+        <!-- Screen for the Christmas Countdown -->
+        <div id="christmas-screen" class="screen hidden">
+            <div class="text-center">
+                <div class="text-[5vw] md:text-[4vw] font-bold uppercase tracking-wider opacity-90 mb-4">Christmas In</div>
+                <div class="flex justify-center gap-4 md:gap-8">
+                    <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                        <span id="days" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
+                        <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Days</span>
+                    </div>
+                    <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                        <span id="hours" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
+                        <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Hours</span>
+                    </div>
+                    <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                        <span id="minutes" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
+                        <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Mins</span>
+                    </div>
+                    <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                        <span id="seconds" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
+                        <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Secs</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        const contentWrapper = document.getElementById('content-wrapper');
         const messageScreen = document.getElementById('message-screen');
         const christmasScreen = document.getElementById('christmas-screen');
         let countdownInterval;
+        let wakeUpFlag = true; // Flag to manage the morning message change
 
-        // --- NEW: Function to load message from external file ---
+        // --- Function to load message from external file ---
         async function loadMessage() {
             try {
                 // Add a timestamp to the URL to prevent the browser from caching the file
@@ -111,13 +122,17 @@
                     throw new Error('Network response was not ok');
                 }
                 const html = await response.text();
-                messageScreen.innerHTML = html;
+                // Only update the message if we are not in the special "asleep" state
+                if (!wakeUpFlag) { 
+                    messageScreen.innerHTML = html;
+                }
             } catch (error) {
                 console.error('Failed to fetch message:', error);
                 messageScreen.innerHTML = `<div class="text-center">Could not load message.</div>`;
             }
         }
 
+        // --- Countdown logic ---
         function startCountdown() {
             if (countdownInterval) clearInterval(countdownInterval);
 
@@ -144,6 +159,7 @@
             countdownInterval = setInterval(update, 1000);
         }
 
+        // --- Screen cycling logic ---
         function cycleScreens() {
             messageScreen.classList.remove('hidden');
             christmasScreen.classList.add('hidden');
@@ -156,12 +172,53 @@
             }, 5000);
         }
 
+        // --- NEW: Function to manage the sleep/wake cycle and morning message ---
+        function manageSleepCycle() {
+            const now = new Date();
+            const hour = now.getHours();
+            const minute = now.getMinutes();
+
+            // Screen is off between 10:45 PM (22:45) and 6:00 AM (06:00)
+            const isSleepTime = (hour > 22 || (hour === 22 && minute >= 45)) || (hour < 6);
+
+            if (isSleepTime) {
+                // Hide the content to make the screen appear black.
+                if (!contentWrapper.classList.contains('content-hidden')) {
+                    contentWrapper.classList.add('content-hidden');
+                }
+                // Set the flag to true, indicating the next transition to awake should trigger the message change.
+                wakeUpFlag = true;
+            } else {
+                // It's time to be awake. Show the content.
+                if (contentWrapper.classList.contains('content-hidden')) {
+                    contentWrapper.classList.remove('content-hidden');
+                }
+
+                // If the wakeUpFlag is true, it means we just transitioned from sleep to awake.
+                if (wakeUpFlag) {
+                    console.log("Good morning! Setting message to 'asleep'.");
+                    // Manually set the message content to "asleep"
+                    messageScreen.innerHTML = `
+                    <div class="flex flex-col text-center max-w-[90%]">
+                        <div class="text-[10vw] font-extrabold uppercase text-gray-100 leading-tight">asleep</div>
+                    </div>`;
+                    // Set the flag to false so this only runs once per wake-up.
+                    // The regular `loadMessage` function will now be able to update the content.
+                    wakeUpFlag = false; 
+                }
+            }
+        }
+
         // --- Start everything ---
         loadMessage(); // Load the message initially
-        setInterval(loadMessage, 10000); // And check for a new one every 10 seconds
+        setInterval(loadMessage, 10000); // Check for a new message every 10 seconds
 
         startCountdown();
         cycleScreens();
+
+        // --- Start the sleep cycle manager ---
+        manageSleepCycle(); // Run once on page load to set the correct initial state
+        setInterval(manageSleepCycle, 60000); // Check the time every minute
     </script>
 </body>
 </html>
