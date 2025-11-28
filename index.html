@@ -11,21 +11,61 @@
     <style>
         body {
             font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
+            overflow: hidden; /* This is key to hiding the sliding content */
             margin: 0;
-            /* Added transition for smooth background color change */
-            transition: background-color 1.5s ease;
+            
+            /* --- NEW: Christmas background is now permanently on the body --- */
+            background: radial-gradient(ellipse at bottom, #C41E3A 0%, #165B33 50%, #FFFFFF 100%);
+            background-size: 200% 200%;
+            animation: christmasGlow 15s ease-in-out infinite alternate;
         }
 
-        /* --- Screen containers and transitions --- */
+        /* --- Keyframes for the background animation --- */
+        @keyframes christmasGlow {
+          0% { background-position: 0% 80%; }
+          50% { background-position: 100% 20%; }
+          100% { background-position: 0% 80%; }
+        }
+
+        /* --- NEW: Wrapper for the sliding animation --- */
+        #slider-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 200vh; /* 2x viewport height to hold both screens */
+            /* Animation: 10s total duration
+               - 4.5s hold on screen 1
+               - 0.5s slide
+               - 4.5s hold on screen 2
+               - 0.5s slide back
+            */
+            animation: slideScreens 10s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+        }
+
+        /* --- Keyframes for the sliding animation --- */
+        @keyframes slideScreens {
+            0% {
+                transform: translateY(0);
+            }
+            45% {
+                transform: translateY(0); /* Hold message screen */
+            }
+            50% {
+                transform: translateY(-100vh); /* Slide up */
+            }
+            95% {
+                transform: translateY(-100vh); /* Hold christmas screen */
+            }
+            100% {
+                transform: translateY(0); /* Slide down */
+            }
+        }
+
+        /* --- Screen containers --- */
         .screen {
             position: absolute;
-            top: 0;
             left: 0;
             width: 100vw;
-            height: 100vh;
-            opacity: 1;
-            transition: opacity 1.5s ease-in-out;
+            height: 100vh; /* Each screen is full viewport height */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -34,82 +74,70 @@
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
         }
 
-        .screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
         /* --- Original Message Screen Styling --- */
         #message-screen {
-            background: radial-gradient(circle at center, #D95D39 0%, #6B4226 50%, #F2C14E 100%); 
-            background-size: 300% 300%;
-            animation: radialShift 25s ease-in-out infinite alternate;
-        }
-
-        @keyframes radialShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 70%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* --- Christmas Screen Styling --- */
-        #christmas-screen {
-            background: radial-gradient(ellipse at bottom, #C41E3A 0%, #165B33 50%, #FFFFFF 100%);
-            background-size: 200% 200%;
-            animation: christmasGlow 15s ease-in-out infinite alternate;
-        }
-
-        @keyframes christmasGlow {
-          0% { background-position: 0% 80%; }
-          50% { background-position: 100% 20%; }
-          100% { background-position: 0% 80%; }
+            top: 0; /* Sits at the top of the slider */
+            /* Removed old background */
         }
         
-        /* --- NEW: Simple class to hide the content wrapper --- */
+        /* --- Christmas Screen Styling --- */
+        #christmas-screen {
+            top: 100vh; /* Sits below the first screen in the slider */
+            /* Removed old background */
+        }
+        
+        /* --- Simple class to hide the content wrapper --- */
         .content-hidden {
             display: none;
         }
     </style>
 </head>
-<body class="bg-black">
+<body class="bg-black"> <!-- bg-black is a fallback -->
     
-    <!-- NEW: A wrapper around all content that can be hidden during sleep time -->
+    <!-- A wrapper around all content that can be hidden during sleep time -->
     <div id="content-wrapper">
-        <!-- Screen for the main message - content is now loaded dynamically -->
-        <div id="message-screen" class="screen">
-            <!-- Loading message content... -->
-        </div>
 
-        <!-- Screen for the Christmas Countdown -->
-        <div id="christmas-screen" class="screen hidden">
-            <div class="text-center">
-                <div class="text-[5vw] md:text-[4vw] font-bold uppercase tracking-wider opacity-90 mb-4">Christmas Is In</div>
-                <div class="flex justify-center gap-4 md:gap-8">
-                    <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
-                        <span id="days" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
-                        <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Days</span>
-                    </div>
-                    <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
-                        <span id="hours" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
-                        <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Hours</span>
-                    </div>
-                    <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
-                        <span id="minutes" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
-                        <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Mins</span>
-                    </div>
-                    <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
-                        <span id="seconds" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
-                        <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Secs</span>
+        <!-- NEW: This wrapper will contain both screens and animate vertically -->
+        <div id="slider-wrapper">
+
+            <!-- Screen for the main message - content is loaded dynamically -->
+            <div id="message-screen" class="screen">
+                <!-- Loading message content... -->
+            </div>
+
+            <!-- Screen for the Christmas Countdown -->
+            <div id="christmas-screen" class="screen">
+                <div class="text-center">
+                    <div class="text-[5vw] md:text-[4vw] font-bold uppercase tracking-wider opacity-90 mb-4">Christmas In</div>
+                    <div class="flex justify-center gap-4 md:gap-8">
+                        <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                            <span id="days" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
+                            <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Days</span>
+                        </div>
+                        <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                            <span id="hours" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
+                            <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Hours</span>
+                        </div>
+                        <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                            <span id="minutes" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
+                            <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Mins</span>
+                        </div>
+                        <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                            <span id="seconds" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
+                            <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Secs</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+
+        </div> <!-- end #slider-wrapper -->
+
+    </div> <!-- end #content-wrapper -->
 
     <script>
         const contentWrapper = document.getElementById('content-wrapper');
         const messageScreen = document.getElementById('message-screen');
-        const christmasScreen = document.getElementById('christmas-screen');
+        // const christmasScreen = document.getElementById('christmas-screen'); // No longer needed for JS
         let countdownInterval;
         let wakeUpFlag = true; // Flag to manage the morning message change
 
@@ -160,19 +188,9 @@
         }
 
         // --- Screen cycling logic ---
-        function cycleScreens() {
-            messageScreen.classList.remove('hidden');
-            christmasScreen.classList.add('hidden');
+        // REMOVED: This is now handled entirely by CSS animations on #slider-wrapper
 
-            setTimeout(() => {
-                messageScreen.classList.add('hidden');
-                christmasScreen.classList.remove('hidden');
-                
-                setTimeout(cycleScreens, 5000);
-            }, 5000);
-        }
-
-        // --- NEW: Function to manage the sleep/wake cycle and morning message ---
+        // --- Function to manage the sleep/wake cycle and morning message ---
         function manageSleepCycle() {
             const now = new Date();
             const hour = now.getHours();
@@ -214,7 +232,7 @@
         setInterval(loadMessage, 10000); // Check for a new message every 10 seconds
 
         startCountdown();
-        cycleScreens();
+        // cycleScreens(); // No longer needed
 
         // --- Start the sleep cycle manager ---
         manageSleepCycle(); // Run once on page load to set the correct initial state
