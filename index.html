@@ -13,21 +13,35 @@
             font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden; /* This is key to hiding the sliding content */
             margin: 0;
-            
-            /* --- NEW: Christmas background is now permanently on the body --- */
-            background: radial-gradient(ellipse at bottom, #C41E3A 0%, #165B33 50%, #FFFFFF 100%);
+            background: #000; /* Fallback */
+        }
+
+        /* --- Background Container --- 
+           Moved background here so it stays fixed while content slides, 
+           or you can put it on body. Keeping it fixed looks better for the 
+           "snow moves, background stays" depth effect, but based on your 
+           request for snow moving WITH screen, we'll keep the background 
+           on the body so the atmosphere feels global. 
+        */
+        .global-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(ellipse at bottom, #C41E3A 0%, #165B33 50%, #000000 100%);
             background-size: 200% 200%;
             animation: christmasGlow 15s ease-in-out infinite alternate;
         }
 
-        /* --- Keyframes for the background animation --- */
         @keyframes christmasGlow {
           0% { background-position: 0% 80%; }
           50% { background-position: 100% 20%; }
           100% { background-position: 0% 80%; }
         }
 
-        /* --- NEW: Wrapper for the sliding animation --- */
+        /* --- Wrapper for the sliding animation --- */
         #slider-wrapper {
             position: relative;
             width: 100vw;
@@ -39,24 +53,44 @@
                - 0.5s slide back
             */
             animation: slideScreens 10s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+            will-change: transform, filter; /* optimize performance */
         }
 
-        /* --- Keyframes for the sliding animation --- */
+        /* --- Keyframes with Motion Blur --- */
         @keyframes slideScreens {
             0% {
                 transform: translateY(0);
+                filter: blur(0px);
             }
             45% {
-                transform: translateY(0); /* Hold message screen */
+                transform: translateY(0);
+                filter: blur(0px);
+            }
+            /* Start movement & blur */
+            46% {
+                filter: blur(8px); /* Motion blur effect */
+            }
+            49% {
+                filter: blur(8px); /* Maintain blur during fast move */
             }
             50% {
-                transform: translateY(-100vh); /* Slide up */
+                transform: translateY(-100vh);
+                filter: blur(0px); /* Snaps back to sharp */
             }
             95% {
-                transform: translateY(-100vh); /* Hold christmas screen */
+                transform: translateY(-100vh);
+                filter: blur(0px);
+            }
+            /* Start return movement & blur */
+            96% {
+                filter: blur(8px);
+            }
+            99% {
+                filter: blur(8px);
             }
             100% {
-                transform: translateY(0); /* Slide down */
+                transform: translateY(0);
+                filter: blur(0px);
             }
         }
 
@@ -65,64 +99,72 @@
             position: absolute;
             left: 0;
             width: 100vw;
-            height: 100vh; /* Each screen is full viewport height */
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
             color: #f0f0f0;
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            z-index: 10; /* Text above background */
         }
 
-        /* --- Original Message Screen Styling --- */
-        #message-screen {
-            top: 0; /* Sits at the top of the slider */
-            /* Removed old background */
-        }
+        #message-screen { top: 0; }
+        #christmas-screen { top: 100vh; }
         
-        /* --- Christmas Screen Styling --- */
-        #christmas-screen {
-            top: 100vh; /* Sits below the first screen in the slider */
-            /* Removed old background */
+        .content-hidden { display: none; }
+
+        /* --- Snowflakes --- */
+        .snowflake {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 5; /* Behind text (10) but above bg */
+            animation: fall linear infinite;
         }
-        
-        /* --- Simple class to hide the content wrapper --- */
-        .content-hidden {
-            display: none;
+
+        @keyframes fall {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(200vh); } /* Fall entire height of slider */
         }
+
     </style>
 </head>
-<body class="bg-black"> <!-- bg-black is a fallback -->
+<body class="bg-black">
     
-    <!-- A wrapper around all content that can be hidden during sleep time -->
+    <!-- Background is fixed so it doesn't slide, creating depth against the sliding content -->
+    <div class="global-bg"></div>
+
     <div id="content-wrapper">
-
-        <!-- NEW: This wrapper will contain both screens and animate vertically -->
         <div id="slider-wrapper">
+            <!-- Snow will be injected here by JS so it moves WITH the slider -->
 
-            <!-- Screen for the main message - content is loaded dynamically -->
+            <!-- Screen 1: Message -->
             <div id="message-screen" class="screen">
                 <!-- Loading message content... -->
             </div>
 
-            <!-- Screen for the Christmas Countdown -->
+            <!-- Screen 2: Christmas Countdown -->
             <div id="christmas-screen" class="screen">
                 <div class="text-center">
                     <div class="text-[5vw] md:text-[4vw] font-bold uppercase tracking-wider opacity-90 mb-4">Christmas In</div>
                     <div class="flex justify-center gap-4 md:gap-8">
-                        <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                        <!-- Countdown Blocks -->
+                        <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10 backdrop-blur-sm">
                             <span id="days" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
                             <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Days</span>
                         </div>
-                        <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                        <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10 backdrop-blur-sm">
                             <span id="hours" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
                             <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Hours</span>
                         </div>
-                        <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                        <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10 backdrop-blur-sm">
                             <span id="minutes" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
                             <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Mins</span>
                         </div>
-                        <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10">
+                        <div class="flex flex-col items-center bg-black/20 p-2 md:p-4 rounded-lg min-w-[18vw] md:min-w-[120px] border border-white/10 backdrop-blur-sm">
                             <span id="seconds" class="text-[12vw] md:text-8xl font-bold leading-none">0</span>
                             <span class="text-[2.5vw] md:text-xl uppercase opacity-70 font-normal">Secs</span>
                         </div>
@@ -130,37 +172,75 @@
                 </div>
             </div>
 
-        </div> <!-- end #slider-wrapper -->
-
-    </div> <!-- end #content-wrapper -->
+        </div> 
+    </div>
 
     <script>
         const contentWrapper = document.getElementById('content-wrapper');
         const messageScreen = document.getElementById('message-screen');
-        // const christmasScreen = document.getElementById('christmas-screen'); // No longer needed for JS
+        const sliderWrapper = document.getElementById('slider-wrapper');
         let countdownInterval;
-        let wakeUpFlag = true; // Flag to manage the morning message change
+        let wakeUpFlag = true; 
 
-        // --- Function to load message from external file ---
+        // --- Snow Generation ---
+        function createSnow() {
+            const snowflakeCount = 80; // Adjust for density
+            
+            for (let i = 0; i < snowflakeCount; i++) {
+                const flake = document.createElement('div');
+                flake.classList.add('snowflake');
+                
+                // Randomize horizontal position
+                flake.style.left = Math.random() * 100 + 'vw';
+                
+                // Randomize vertical start position so they don't all start at the top
+                // We spread them across the entire 200vh height initially
+                const startTop = Math.random() * 200; 
+                flake.style.top = startTop + 'vh';
+                
+                // Randomize size
+                const size = Math.random() * 0.6 + 0.2; // 0.2vw to 0.8vw
+                flake.style.width = size + 'vw';
+                flake.style.height = size + 'vw';
+                
+                // Randomize animation duration (speed)
+                const duration = Math.random() * 5 + 5; // 5s to 10s
+                flake.style.animationDuration = duration + 's';
+                
+                // Randomize delay so the loop isn't synchronized
+                flake.style.animationDelay = (Math.random() * 5) * -1 + 's';
+                
+                // Randomize opacity for depth
+                flake.style.opacity = Math.random() * 0.5 + 0.3;
+
+                // Reset logic: When animation ends (visually loops), we might want to ensure smooth looping.
+                // Since we use infinite linear animation, we just need to make sure the start/end match nicely.
+                // However, standard CSS 'fall' just resets to 0. To make it seamless, 
+                // we set the animation to run.
+                
+                sliderWrapper.appendChild(flake);
+            }
+        }
+
+        // --- Message Loader ---
         async function loadMessage() {
             try {
-                // Add a timestamp to the URL to prevent the browser from caching the file
                 const response = await fetch('message.html?t=' + new Date().getTime());
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
+                if (!response.ok) throw new Error('Network response was not ok');
                 const html = await response.text();
-                // Only update the message if we are not in the special "asleep" state
                 if (!wakeUpFlag) { 
                     messageScreen.innerHTML = html;
                 }
             } catch (error) {
                 console.error('Failed to fetch message:', error);
-                messageScreen.innerHTML = `<div class="text-center">Could not load message.</div>`;
+                // Keep old message or show error if empty
+                if(messageScreen.innerHTML.trim() === "") {
+                     messageScreen.innerHTML = `<div class="text-center">Loading...</div>`;
+                }
             }
         }
 
-        // --- Countdown logic ---
+        // --- Countdown Logic ---
         function startCountdown() {
             if (countdownInterval) clearInterval(countdownInterval);
 
@@ -187,56 +267,42 @@
             countdownInterval = setInterval(update, 1000);
         }
 
-        // --- Screen cycling logic ---
-        // REMOVED: This is now handled entirely by CSS animations on #slider-wrapper
-
-        // --- Function to manage the sleep/wake cycle and morning message ---
+        // --- Sleep Cycle Manager ---
         function manageSleepCycle() {
             const now = new Date();
             const hour = now.getHours();
             const minute = now.getMinutes();
 
-            // Screen is off between 10:45 PM (22:45) and 6:00 AM (06:00)
+            // Screen is off between 10:45 PM and 6:00 AM
             const isSleepTime = (hour > 22 || (hour === 22 && minute >= 45)) || (hour < 6);
 
             if (isSleepTime) {
-                // Hide the content to make the screen appear black.
                 if (!contentWrapper.classList.contains('content-hidden')) {
                     contentWrapper.classList.add('content-hidden');
                 }
-                // Set the flag to true, indicating the next transition to awake should trigger the message change.
                 wakeUpFlag = true;
             } else {
-                // It's time to be awake. Show the content.
                 if (contentWrapper.classList.contains('content-hidden')) {
                     contentWrapper.classList.remove('content-hidden');
                 }
-
-                // If the wakeUpFlag is true, it means we just transitioned from sleep to awake.
                 if (wakeUpFlag) {
-                    console.log("Good morning! Setting message to 'asleep'.");
-                    // Manually set the message content to "asleep"
+                    console.log("Good morning!");
                     messageScreen.innerHTML = `
                     <div class="flex flex-col text-center max-w-[90%]">
                         <div class="text-[10vw] font-extrabold uppercase text-gray-100 leading-tight">asleep</div>
                     </div>`;
-                    // Set the flag to false so this only runs once per wake-up.
-                    // The regular `loadMessage` function will now be able to update the content.
                     wakeUpFlag = false; 
                 }
             }
         }
 
-        // --- Start everything ---
-        loadMessage(); // Load the message initially
-        setInterval(loadMessage, 10000); // Check for a new message every 10 seconds
-
+        // --- Init ---
+        createSnow(); // Let it snow!
+        loadMessage();
+        setInterval(loadMessage, 10000);
         startCountdown();
-        // cycleScreens(); // No longer needed
-
-        // --- Start the sleep cycle manager ---
-        manageSleepCycle(); // Run once on page load to set the correct initial state
-        setInterval(manageSleepCycle, 60000); // Check the time every minute
+        manageSleepCycle();
+        setInterval(manageSleepCycle, 60000);
     </script>
 </body>
 </html>
