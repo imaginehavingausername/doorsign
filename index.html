@@ -25,7 +25,7 @@
             width: 100vw;
             height: 100vh;
             z-index: -1;
-            /* Restored the festive Red/Green gradient */
+            /* Festive Red/Green gradient */
             background: radial-gradient(ellipse at bottom, #C41E3A 0%, #165B33 50%, #000000 100%);
             background-size: 200% 200%;
             animation: christmasGlow 15s ease-in-out infinite alternate;
@@ -145,7 +145,8 @@
             <div id="christmas-screen" class="screen">
                 <div class="relative z-10 flex flex-col items-center justify-center w-full">
                     
-                    <div class="text-[3vw] font-bold uppercase tracking-[0.2em] text-green-400 mb-8 drop-shadow-lg">
+                    <!-- Increased size for mobile: text-[7vw] instead of 3vw -->
+                    <div class="text-[7vw] md:text-[3vw] font-bold uppercase tracking-[0.2em] text-green-400 mb-8 drop-shadow-lg text-center">
                         Christmas is in
                     </div>
 
@@ -153,43 +154,42 @@
                     <div class="flex items-center justify-center gap-2 md:gap-4">
                         
                         <!-- HOURS -->
-                        <div class="glass-card flex flex-col items-center justify-center p-6 rounded-2xl w-[28vw] md:w-48 aspect-square relative overflow-hidden group">
+                        <!-- Reduced padding (p-2) and width (w-[26vw]) for mobile to reduce empty space -->
+                        <div class="glass-card flex flex-col items-center justify-center p-2 md:p-6 rounded-2xl w-[26vw] md:w-48 aspect-square relative overflow-hidden group">
                             <div class="absolute inset-0 bg-gradient-to-b from-transparent to-green-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            <!-- Added Progress Bar for Hours -->
                             <div id="hour-bar" class="absolute bottom-0 left-0 h-1 bg-white/30 transition-all duration-300 ease-out" style="width: 0%"></div>
                             
-                            <span id="hours" class="timer-font gradient-text text-[8vw] md:text-7xl font-bold leading-none">00</span>
-                            <span class="text-[1.5vw] md:text-sm uppercase tracking-widest text-gray-400 mt-2">Hours</span>
+                            <!-- Increased font size for mobile: text-[10vw] -->
+                            <span id="hours" class="timer-font gradient-text text-[10vw] md:text-7xl font-bold leading-none">00</span>
+                            <span class="text-[1.8vw] md:text-sm uppercase tracking-widest text-gray-400 mt-1 md:mt-2">Hours</span>
                         </div>
 
                         <!-- Separator -->
-                        <div class="flex flex-col gap-2 md:gap-4 text-2xl md:text-4xl text-gray-500">
+                        <div class="flex flex-col gap-1 md:gap-4 text-xl md:text-4xl text-gray-500">
                             <span class="separator-dot">●</span>
                             <span class="separator-dot">●</span>
                         </div>
 
                         <!-- MINUTES -->
-                        <div class="glass-card flex flex-col items-center justify-center p-6 rounded-2xl w-[28vw] md:w-48 aspect-square relative overflow-hidden">
-                            <!-- Added Progress Bar for Minutes -->
+                        <div class="glass-card flex flex-col items-center justify-center p-2 md:p-6 rounded-2xl w-[26vw] md:w-48 aspect-square relative overflow-hidden">
                             <div id="min-bar" class="absolute bottom-0 left-0 h-1 bg-white/50 transition-all duration-300 ease-out" style="width: 0%"></div>
 
-                            <span id="minutes" class="timer-font gradient-text text-[8vw] md:text-7xl font-bold leading-none">00</span>
-                            <span class="text-[1.5vw] md:text-sm uppercase tracking-widest text-gray-400 mt-2">Minutes</span>
+                            <span id="minutes" class="timer-font gradient-text text-[10vw] md:text-7xl font-bold leading-none">00</span>
+                            <span class="text-[1.8vw] md:text-sm uppercase tracking-widest text-gray-400 mt-1 md:mt-2">Minutes</span>
                         </div>
 
                         <!-- Separator -->
-                        <div class="flex flex-col gap-2 md:gap-4 text-2xl md:text-4xl text-gray-500">
+                        <div class="flex flex-col gap-1 md:gap-4 text-xl md:text-4xl text-gray-500">
                             <span class="separator-dot">●</span>
                             <span class="separator-dot">●</span>
                         </div>
 
                         <!-- SECONDS -->
-                        <div class="glass-card glow-ring flex flex-col items-center justify-center p-6 rounded-2xl w-[28vw] md:w-48 aspect-square relative overflow-hidden">
-                            <!-- Subtle progress bar at bottom -->
+                        <div class="glass-card glow-ring flex flex-col items-center justify-center p-2 md:p-6 rounded-2xl w-[26vw] md:w-48 aspect-square relative overflow-hidden">
                             <div id="sec-bar" class="absolute bottom-0 left-0 h-1 bg-green-500 transition-all duration-300 ease-out" style="width: 100%"></div>
                             
-                            <span id="seconds" class="timer-font text-white text-[8vw] md:text-7xl font-bold leading-none drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">00</span>
-                            <span class="text-[1.5vw] md:text-sm uppercase tracking-widest text-green-400 mt-2">Seconds</span>
+                            <span id="seconds" class="timer-font text-white text-[10vw] md:text-7xl font-bold leading-none drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">00</span>
+                            <span class="text-[1.8vw] md:text-sm uppercase tracking-widest text-green-400 mt-1 md:mt-2">Seconds</span>
                         </div>
 
                     </div>
@@ -204,45 +204,29 @@
         const sliderWrapper = document.getElementById('slider-wrapper');
         let countdownInterval;
 
-        // --- Snow Generation ---
         function createSnow() {
             const snowflakeCount = 60; 
             for (let i = 0; i < snowflakeCount; i++) {
                 const flake = document.createElement('div');
                 flake.classList.add('snowflake');
-                
-                // Randomize horizontal position
                 flake.style.left = Math.random() * 100 + 'vw';
-                
-                // FIX: Start ALL snow above the container. 
-                // The random distribution comes from animation-delay, not start position.
-                // -10vh ensures it spawns out of sight.
                 flake.style.top = '-10vh';
-                
                 const size = Math.random() * 0.4 + 0.2; 
                 flake.style.width = size + 'vw';
                 flake.style.height = size + 'vw';
-                
-                const duration = Math.random() * 5 + 8; // 8-13s fall duration
+                const duration = Math.random() * 5 + 8; 
                 flake.style.animationDuration = duration + 's';
-                
-                // Negative delay makes them start "already falling" so no initial empty screen
-                // We use a large range to ensure they are well distributed vertically
                 flake.style.animationDelay = (Math.random() * duration) * -1 + 's';
-                
                 flake.style.opacity = Math.random() * 0.5 + 0.1;
                 sliderWrapper.appendChild(flake);
             }
         }
 
-        // --- Message Loader ---
         async function loadMessage() {
             try {
-                // Ensure we use a cache buster to get the latest message immediately
                 const response = await fetch('message.html?t=' + new Date().getTime());
                 if (!response.ok) throw new Error('Network response was not ok');
                 const html = await response.text();
-                // Only update if content is different to prevent flash
                 if (messageScreen.innerHTML !== html) {
                     messageScreen.innerHTML = html;
                 }
@@ -254,7 +238,6 @@
             }
         }
 
-        // --- Countdown Logic ---
         function startCountdown() {
             if (countdownInterval) clearInterval(countdownInterval);
 
@@ -269,35 +252,25 @@
             const update = () => {
                 const now = new Date();
                 let christmasDate = new Date(`December 25, ${now.getFullYear()} 00:00:00`);
-                
-                // If Christmas passed this year, count to next year
                 if (now > christmasDate) {
                     christmasDate = new Date(`December 25, ${now.getFullYear() + 1} 00:00:00`);
                 }
 
                 const totalSeconds = Math.floor((christmasDate - now) / 1000);
-
-                // Calculate TOTAL hours (days * 24 + hours)
                 const totalHours = Math.floor(totalSeconds / 3600);
                 const minutes = Math.floor((totalSeconds % 3600) / 60);
                 const seconds = totalSeconds % 60;
 
-                // Update DOM
                 hoursEl.innerText = totalHours; 
                 minutesEl.innerText = String(minutes).padStart(2, '0');
                 secondsEl.innerText = String(seconds).padStart(2, '0');
 
-                // Visual Flair: Bars
-                
-                // Seconds: 0-60
                 const secPct = (seconds / 60) * 100;
                 if(secBar) secBar.style.width = `${secPct}%`;
 
-                // Minutes: 0-60
                 const minPct = (minutes / 60) * 100;
                 if(minBar) minBar.style.width = `${minPct}%`;
 
-                // Hours: Modulo 24 (progress through a "day" unit)
                 const hourPct = ((totalHours % 24) / 24) * 100;
                 if(hourBar) hourBar.style.width = `${hourPct}%`;
             };
@@ -306,13 +279,10 @@
             countdownInterval = setInterval(update, 1000);
         }
 
-        // --- Init ---
         createSnow();
         loadMessage();
-        setInterval(loadMessage, 5000); // Check for new message every 5s
+        setInterval(loadMessage, 5000); 
         startCountdown();
-        
-        // Sleep cycle removed as requested!
     </script>
 </body>
 </html>
