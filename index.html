@@ -2,22 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Door Sign</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Christmas Day Sign</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Inter for UI text, JetBrains Mono for the numbers (tabular figures needed for timer) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <!-- Fredoka One for the bubbly shape -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Fredoka One', cursive;
             overflow: hidden;
             margin: 0;
             background: #000;
+            touch-action: none; /* Prevent scroll on mobile */
         }
 
-        /* --- Background --- */
+        /* --- 1. Background & Atmosphere --- */
         .global-bg {
             position: fixed;
             top: 0;
@@ -25,264 +27,285 @@
             width: 100vw;
             height: 100vh;
             z-index: -1;
-            /* Festive Red/Green gradient */
-            background: radial-gradient(ellipse at bottom, #C41E3A 0%, #165B33 50%, #000000 100%);
+            /* Deep, rich Christmas gradient */
+            background: radial-gradient(circle at center, #8f1729 0%, #174227 60%, #05140b 100%);
             background-size: 200% 200%;
             animation: christmasGlow 15s ease-in-out infinite alternate;
+            transition: opacity 2s ease;
         }
 
         @keyframes christmasGlow {
-            0% { background-position: 0% 80%; filter: brightness(0.8); }
-            50% { background-position: 100% 20%; filter: brightness(1.1); }
-            100% { background-position: 0% 80%; filter: brightness(0.8); }
+            0% { background-position: 0% 50%; filter: brightness(0.9); }
+            50% { background-position: 100% 50%; filter: brightness(1.2); }
+            100% { background-position: 0% 50%; filter: brightness(0.9); }
         }
 
-        /* --- Slider Animation --- */
-        #slider-wrapper {
-            position: relative;
-            width: 100vw;
-            height: 200vh;
-            /* 10s loop: 4.5s hold, 0.5s slide */
-            animation: slideScreens 10s cubic-bezier(0.76, 0, 0.24, 1) infinite;
-            will-change: transform, filter;
-        }
-
-        @keyframes slideScreens {
-            0%, 45% { transform: translateY(0); filter: blur(0px); }
-            46%, 49% { filter: blur(8px); } /* Motion blur */
-            50%, 95% { transform: translateY(-100vh); filter: blur(0px); }
-            96%, 99% { filter: blur(8px); } /* Motion blur return */
-            100% { transform: translateY(0); filter: blur(0px); }
-        }
-
-        /* --- Screens --- */
-        .screen {
-            position: absolute;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: #fff;
-            z-index: 10;
-        }
-
-        #message-screen { top: 0; }
-        #christmas-screen { top: 100vh; }
-
-        /* --- Snowflakes --- */
+        /* --- 2. Snow System --- */
         .snowflake {
             position: absolute;
             background-color: white;
             border-radius: 50%;
-            opacity: 0.8;
             pointer-events: none;
-            z-index: 5;
             animation: fall linear infinite;
         }
 
         @keyframes fall {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(210vh); } /* Fall slightly past the 200vh container */
+            0% { transform: translateY(-10vh) translateX(0); }
+            100% { transform: translateY(110vh) translateX(20px); }
         }
 
-        /* --- Timer Styling --- */
-        .timer-font {
-            font-family: 'JetBrains Mono', monospace;
-            font-variant-numeric: tabular-nums;
-        }
-        
-        /* Glassmorphism Card */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        /* --- 3. Mylar Balloon Typography --- */
+        .balloon-word {
+            display: flex;
+            justify-content: center;
+            gap: 0.2rem; /* Tight gap for balloon clusters */
+            perspective: 1000px;
         }
 
-        /* Gradient Text */
-        .gradient-text {
-            background: linear-gradient(to bottom, #ffffff, #a5a5a5);
+        .balloon-char {
+            display: inline-block;
+            position: relative;
+            color: #d4af37; /* Fallback */
+            
+            /* The Mylar Material Look */
+            background-image: linear-gradient(135deg, 
+                #ffd700 0%, 
+                #fff8db 20%, 
+                #d4af37 40%, 
+                #b8860b 60%, 
+                #fff8db 80%, 
+                #d4af37 100%
+            );
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5));
+            
+            /* 3D Depth & Shine */
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.6));
+            
+            /* Initial State for Animation */
+            transform-origin: center bottom;
+            will-change: transform;
         }
 
-        /* Separator Dots Animation */
-        .separator-dot {
-            animation: blink 1s ease-in-out infinite;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+        /* Red Variant for 'Christmas' */
+        .balloon-red .balloon-char {
+            background-image: linear-gradient(135deg, 
+                #ff4d4d 0%, 
+                #ffcccc 20%, 
+                #cc0000 40%, 
+                #990000 60%, 
+                #ffcccc 80%, 
+                #cc0000 100%
+            );
         }
 
-        /* Progress/Glow Ring effect for seconds */
-        .glow-ring {
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-            transition: box-shadow 0.2s ease;
+        /* Floating Animation (Bobbing) */
+        @keyframes floatBalloon {
+            0% { transform: translateY(0) rotate(-3deg) scale(1); }
+            50% { transform: translateY(-15px) rotate(3deg) scale(1.02); }
+            100% { transform: translateY(0) rotate(-3deg) scale(1); }
+        }
+
+        /* Pop-in Animation (Inflation) */
+        @keyframes inflate {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.2); opacity: 1; }
+            80% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- 4. Sleep Mode (Blackout) --- */
+        #blackout-curtain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 2s ease;
+        }
+        .sleeping #blackout-curtain {
+            opacity: 1;
+            pointer-events: all;
         }
     </style>
 </head>
-<body class="bg-black text-white">
+<body class="bg-black text-white h-screen w-screen overflow-hidden flex items-center justify-center">
     
-    <div class="global-bg"></div>
+    <!-- Background Elements -->
+    <div class="global-bg" id="bg-layer"></div>
+    
+    <!-- Snow Layer 1: Behind Text (Z-Index 0) -->
+    <div id="snow-back" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0"></div>
+    
+    <!-- Sleep Mode Overlay -->
+    <div id="blackout-curtain"></div>
 
-    <div id="content-wrapper">
-        <div id="slider-wrapper">
-            <!-- Snow is injected here -->
+    <!-- Main Content (Z-Index 10) -->
+    <main id="main-content" class="relative z-10 flex flex-col items-center justify-center w-full max-w-lg mx-auto p-4 space-y-8">
+        
+        <!-- MERRY -->
+        <div id="word-merry" class="balloon-word text-[18vw] md:text-[8rem] leading-none">
+            <!-- Letters injected by JS -->
+        </div>
 
-            <!-- Screen 1: Message -->
-            <div id="message-screen" class="screen px-4">
-                <!-- Content loaded from message.html -->
-                <div class="animate-pulse">Loading message...</div>
-            </div>
+        <!-- CHRISTMAS -->
+        <div id="word-christmas" class="balloon-word balloon-red text-[13vw] md:text-[6rem] leading-none">
+            <!-- Letters injected by JS -->
+        </div>
 
-            <!-- Screen 2: Christmas Countdown -->
-            <div id="christmas-screen" class="screen">
-                <div class="relative z-10 flex flex-col items-center justify-center w-full">
-                    
-                    <!-- Increased size for mobile: text-[7vw] instead of 3vw -->
-                    <div class="text-[7vw] md:text-[3vw] font-bold uppercase tracking-[0.2em] text-green-400 mb-8 drop-shadow-lg text-center">
-                        Christmas is in
-                    </div>
+    </main>
 
-                    <!-- Timer Container -->
-                    <div class="flex items-center justify-center gap-2 md:gap-4">
-                        
-                        <!-- HOURS -->
-                        <!-- Reduced padding (p-2) and width (w-[26vw]) for mobile to reduce empty space -->
-                        <div class="glass-card flex flex-col items-center justify-center p-2 md:p-6 rounded-2xl w-[26vw] md:w-48 aspect-square relative overflow-hidden group">
-                            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-green-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            <div id="hour-bar" class="absolute bottom-0 left-0 h-1 bg-white/30 transition-all duration-300 ease-out" style="width: 0%"></div>
-                            
-                            <!-- Increased font size for mobile: text-[10vw] -->
-                            <span id="hours" class="timer-font gradient-text text-[10vw] md:text-7xl font-bold leading-none">00</span>
-                            <span class="text-[1.8vw] md:text-sm uppercase tracking-widest text-gray-400 mt-1 md:mt-2">Hours</span>
-                        </div>
-
-                        <!-- Separator -->
-                        <div class="flex flex-col gap-1 md:gap-4 text-xl md:text-4xl text-gray-500">
-                            <span class="separator-dot">●</span>
-                            <span class="separator-dot">●</span>
-                        </div>
-
-                        <!-- MINUTES -->
-                        <div class="glass-card flex flex-col items-center justify-center p-2 md:p-6 rounded-2xl w-[26vw] md:w-48 aspect-square relative overflow-hidden">
-                            <div id="min-bar" class="absolute bottom-0 left-0 h-1 bg-white/50 transition-all duration-300 ease-out" style="width: 0%"></div>
-
-                            <span id="minutes" class="timer-font gradient-text text-[10vw] md:text-7xl font-bold leading-none">00</span>
-                            <span class="text-[1.8vw] md:text-sm uppercase tracking-widest text-gray-400 mt-1 md:mt-2">Minutes</span>
-                        </div>
-
-                        <!-- Separator -->
-                        <div class="flex flex-col gap-1 md:gap-4 text-xl md:text-4xl text-gray-500">
-                            <span class="separator-dot">●</span>
-                            <span class="separator-dot">●</span>
-                        </div>
-
-                        <!-- SECONDS -->
-                        <div class="glass-card glow-ring flex flex-col items-center justify-center p-2 md:p-6 rounded-2xl w-[26vw] md:w-48 aspect-square relative overflow-hidden">
-                            <div id="sec-bar" class="absolute bottom-0 left-0 h-1 bg-green-500 transition-all duration-300 ease-out" style="width: 100%"></div>
-                            
-                            <span id="seconds" class="timer-font text-white text-[10vw] md:text-7xl font-bold leading-none drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">00</span>
-                            <span class="text-[1.8vw] md:text-sm uppercase tracking-widest text-green-400 mt-1 md:mt-2">Seconds</span>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
-        </div> 
-    </div>
+    <!-- Snow Layer 2: In Front of Text (Z-Index 20) -->
+    <div id="snow-front" class="fixed top-0 left-0 w-full h-full pointer-events-none z-20"></div>
 
     <script>
-        const messageScreen = document.getElementById('message-screen');
-        const sliderWrapper = document.getElementById('slider-wrapper');
-        let countdownInterval;
+        // --- Configuration ---
+        const CONFIG = {
+            refreshInterval: 20000, // 20 seconds
+            sleepTime: 22.5,        // 10:30 PM (22:30 = 22.5)
+            wakeTime: 6.0,          // 6:00 AM
+            debug: false            // Set to true to test sleep mode immediately
+        };
 
-        function createSnow() {
-            const snowflakeCount = 60; 
-            for (let i = 0; i < snowflakeCount; i++) {
+        // --- 1. Typography Setup ---
+        function createBalloonText(elementId, text) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = '';
+            
+            [...text].forEach((char, index) => {
+                const span = document.createElement('span');
+                span.textContent = char;
+                span.className = 'balloon-char';
+                
+                // Staggered Animation for "Float"
+                // Randomize delay slightly so they don't bob in perfect unison
+                const delay = Math.random() * 2;
+                const duration = 3 + Math.random() * 2; // 3-5s duration
+                span.style.animation = `floatBalloon ${duration}s ease-in-out infinite alternate`;
+                span.style.animationDelay = `-${delay}s`;
+                
+                container.appendChild(span);
+            });
+        }
+
+        function triggerInflation() {
+            const chars = document.querySelectorAll('.balloon-char');
+            chars.forEach((char, index) => {
+                // Reset animation to trigger reflow
+                char.style.animation = 'none';
+                char.offsetHeight; /* trigger reflow */
+                
+                // Re-apply float, but add inflate entrance
+                // We combine animations: inflate runs once, float runs infinitely
+                const floatDelay = Math.random() * 2;
+                const floatDuration = 3 + Math.random() * 2;
+                
+                // Stagger the inflation slightly for a wave effect
+                const inflateDelay = index * 0.05; 
+                
+                char.style.animation = `
+                    inflate 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${inflateDelay}s forwards, 
+                    floatBalloon ${floatDuration}s ease-in-out ${inflateDelay + 0.8}s infinite alternate
+                `;
+            });
+        }
+
+        // --- 2. Snow System ---
+        function createSnowLayer(containerId, count, minSize, maxSize, minOpacity, maxOpacity) {
+            const container = document.getElementById(containerId);
+            
+            for (let i = 0; i < count; i++) {
                 const flake = document.createElement('div');
                 flake.classList.add('snowflake');
+                
+                // Random Positioning
                 flake.style.left = Math.random() * 100 + 'vw';
                 flake.style.top = '-10vh';
-                const size = Math.random() * 0.4 + 0.2; 
+                
+                // Random Appearance
+                const size = Math.random() * (maxSize - minSize) + minSize;
                 flake.style.width = size + 'vw';
                 flake.style.height = size + 'vw';
-                const duration = Math.random() * 5 + 8; 
+                flake.style.opacity = Math.random() * (maxOpacity - minOpacity) + minOpacity;
+                
+                // Random Fall Physics
+                const duration = Math.random() * 5 + 10; // 10-15s fall time
                 flake.style.animationDuration = duration + 's';
-                flake.style.animationDelay = (Math.random() * duration) * -1 + 's';
-                flake.style.opacity = Math.random() * 0.5 + 0.1;
-                sliderWrapper.appendChild(flake);
+                flake.style.animationDelay = (Math.random() * duration) * -1 + 's'; // Start randomly
+                
+                container.appendChild(flake);
             }
         }
 
-        async function loadMessage() {
-            try {
-                const response = await fetch('message.html?t=' + new Date().getTime());
-                if (!response.ok) throw new Error('Network response was not ok');
-                const html = await response.text();
-                if (messageScreen.innerHTML !== html) {
-                    messageScreen.innerHTML = html;
-                }
-            } catch (error) {
-                console.error('Failed to fetch message:', error);
-                if(messageScreen.innerHTML.trim() === "" || messageScreen.innerHTML.includes("Loading")) {
-                     messageScreen.innerHTML = `<div class="flex flex-col text-center"><h1 class="text-4xl font-bold text-white">Happy Holidays!</h1></div>`;
-                }
-            }
-        }
-
-        function startCountdown() {
-            if (countdownInterval) clearInterval(countdownInterval);
-
-            const hoursEl = document.getElementById('hours');
-            const minutesEl = document.getElementById('minutes');
-            const secondsEl = document.getElementById('seconds');
+        function initSnow() {
+            // Back Snow: Smaller, dimmer, behind text
+            createSnowLayer('snow-back', 30, 0.2, 0.5, 0.1, 0.4);
             
-            const hourBar = document.getElementById('hour-bar');
-            const minBar = document.getElementById('min-bar');
-            const secBar = document.getElementById('sec-bar');
-
-            const update = () => {
-                const now = new Date();
-                let christmasDate = new Date(`December 25, ${now.getFullYear()} 00:00:00`);
-                if (now > christmasDate) {
-                    christmasDate = new Date(`December 25, ${now.getFullYear() + 1} 00:00:00`);
-                }
-
-                const totalSeconds = Math.floor((christmasDate - now) / 1000);
-                const totalHours = Math.floor(totalSeconds / 3600);
-                const minutes = Math.floor((totalSeconds % 3600) / 60);
-                const seconds = totalSeconds % 60;
-
-                hoursEl.innerText = totalHours; 
-                minutesEl.innerText = String(minutes).padStart(2, '0');
-                secondsEl.innerText = String(seconds).padStart(2, '0');
-
-                const secPct = (seconds / 60) * 100;
-                if(secBar) secBar.style.width = `${secPct}%`;
-
-                const minPct = (minutes / 60) * 100;
-                if(minBar) minBar.style.width = `${minPct}%`;
-
-                const hourPct = ((totalHours % 24) / 24) * 100;
-                if(hourBar) hourBar.style.width = `${hourPct}%`;
-            };
-
-            update();
-            countdownInterval = setInterval(update, 1000);
+            // Front Snow: Larger, brighter, in front of text
+            createSnowLayer('snow-front', 20, 0.6, 1.2, 0.5, 0.9);
         }
 
-        createSnow();
-        loadMessage();
-        setInterval(loadMessage, 5000); 
-        startCountdown();
+        // --- 3. Animation Cycle Logic ---
+        function startAnimationCycle() {
+            // Initial state: Text inflates
+            triggerInflation();
+
+            setInterval(() => {
+                // If sleeping, do not run animation logic
+                if (document.body.classList.contains('sleeping')) return;
+
+                // Just re-trigger the inflation animation
+                triggerInflation();
+
+            }, CONFIG.refreshInterval);
+        }
+
+        // --- 4. Sleep Timer Logic ---
+        function checkTime() {
+            const now = new Date();
+            const currentHour = now.getHours() + (now.getMinutes() / 60);
+            
+            // Sleep Condition: After 10:30 PM OR Before 6:00 AM
+            // 22:30 = 22.5
+            const isSleepTime = currentHour >= CONFIG.sleepTime || currentHour < CONFIG.wakeTime;
+
+            if (isSleepTime && !CONFIG.debug) {
+                if (!document.body.classList.contains('sleeping')) {
+                    console.log("Goodnight! Entering sleep mode.");
+                    document.body.classList.add('sleeping');
+                }
+            } else {
+                if (document.body.classList.contains('sleeping')) {
+                    console.log("Good morning! Waking up.");
+                    document.body.classList.remove('sleeping');
+                    // Re-trigger animation on wake
+                    triggerInflation();
+                }
+            }
+        }
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Setup Text
+            createBalloonText('word-merry', 'MERRY');
+            createBalloonText('word-christmas', 'CHRISTMAS');
+            
+            // Setup Environment
+            initSnow();
+            
+            // Start Cycles
+            startAnimationCycle();
+            
+            // Start Sleep Timer (Check every minute)
+            checkTime();
+            setInterval(checkTime, 60000);
+        });
+
     </script>
 </body>
 </html>
