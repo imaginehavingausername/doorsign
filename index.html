@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Christmas Day Sign</title>
+    <title>New Year Sign</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,12 +54,31 @@
             100% { transform: translateY(110vh) translateX(20px); }
         }
 
-        /* --- 3. Mylar Balloon Typography --- */
+        /* --- 3. Music Notes System --- */
+        .music-note {
+            position: absolute;
+            color: #d4af37; /* Gold */
+            pointer-events: none;
+            animation: floatUpNote linear infinite;
+            z-index: 5;
+            font-family: sans-serif; /* Standard font for symbols */
+        }
+
+        @keyframes floatUpNote {
+            0% { transform: translateY(110vh) translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) translateX(50px) rotate(45deg); opacity: 0; }
+        }
+
+        /* --- 4. Mylar Balloon Typography --- */
         .balloon-word {
             display: flex;
             justify-content: center;
-            gap: 0.2rem; /* Tight gap for balloon clusters */
+            gap: 0.1rem; 
             perspective: 1000px;
+            margin-bottom: 0.5rem; /* Space between lines */
+            flex-wrap: nowrap;
         }
 
         .balloon-char {
@@ -88,7 +107,7 @@
             will-change: transform;
         }
 
-        /* Red Variant for 'Christmas' */
+        /* Red Variant */
         .balloon-red .balloon-char {
             background-image: linear-gradient(135deg, 
                 #ff4d4d 0%, 
@@ -115,7 +134,7 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* --- 4. Sleep Mode (Blackout) --- */
+        /* --- 5. Sleep Mode (Blackout) --- */
         #blackout-curtain {
             position: fixed;
             top: 0;
@@ -132,6 +151,11 @@
             opacity: 1;
             pointer-events: all;
         }
+
+        /* Container transition for smooth vertical shifts if needed */
+        #message-container {
+            transition: all 1s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-black text-white h-screen w-screen overflow-hidden flex items-center justify-center">
@@ -141,23 +165,19 @@
     
     <!-- Snow Layer 1: Behind Text (Z-Index 0) -->
     <div id="snow-back" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0"></div>
+
+    <!-- Music Notes Layer (Z-Index 5) -->
+    <div id="music-notes-layer" class="fixed top-0 left-0 w-full h-full pointer-events-none z-5"></div>
     
     <!-- Sleep Mode Overlay -->
     <div id="blackout-curtain"></div>
 
     <!-- Main Content (Z-Index 10) -->
-    <main id="main-content" class="relative z-10 flex flex-col items-center justify-center w-full max-w-lg mx-auto p-4 space-y-8">
-        
-        <!-- MERRY -->
-        <div id="word-merry" class="balloon-word text-[18vw] md:text-[8rem] leading-none">
-            <!-- Letters injected by JS -->
+    <main class="relative z-10 w-full max-w-lg mx-auto p-4">
+        <!-- Message Container: Flex column centered. As items add, they push up/center automatically -->
+        <div id="message-container" class="flex flex-col items-center justify-center min-h-[50vh]">
+            <!-- Dynamic Content Injected Here -->
         </div>
-
-        <!-- CHRISTMAS -->
-        <div id="word-christmas" class="balloon-word balloon-red text-[13vw] md:text-[6rem] leading-none">
-            <!-- Letters injected by JS -->
-        </div>
-
     </main>
 
     <!-- Snow Layer 2: In Front of Text (Z-Index 20) -->
@@ -166,112 +186,155 @@
     <script>
         // --- Configuration ---
         const CONFIG = {
-            refreshInterval: 20000, // 20 seconds
-            sleepTime: 22.5,        // 10:30 PM (22:30 = 22.5)
+            sequenceDelay: 2000,    // Time between lines appearing
+            cycleResetTime: 8000,   // Time after full message before reset
+            sleepTime: 22.5,        // 10:30 PM
             wakeTime: 6.0,          // 6:00 AM
-            debug: false            // Set to true to test sleep mode immediately
+            debug: false
         };
 
-        // --- 1. Typography Setup ---
-        function createBalloonText(elementId, text) {
-            const container = document.getElementById(elementId);
-            container.innerHTML = '';
+        const MESSAGE_LINES = [
+            { text: "We wish you", type: "gold", size: "text-[10vw] md:text-5xl" },
+            { text: "a Merry Christmas", type: "red", size: "text-[12vw] md:text-7xl" },
+            { text: "and a Happy", type: "gold", size: "text-[10vw] md:text-5xl" },
+            { text: "New Year!", type: "red", size: "text-[15vw] md:text-8xl" }
+        ];
+
+        let sequenceTimeout; // To track/cancel timeouts during sleep
+
+        // --- 1. Typography & Animation ---
+        function createBalloonLine(textObj) {
+            const lineContainer = document.createElement('div');
+            lineContainer.className = `balloon-word ${textObj.type === 'red' ? 'balloon-red' : ''} ${textObj.size} leading-none`;
             
-            [...text].forEach((char, index) => {
+            [...textObj.text].forEach((char, index) => {
+                // Handle spaces to ensure words don't collapse too much, though flex gap handles most
+                if (char === ' ') {
+                    const space = document.createElement('span');
+                    space.style.width = '0.3em';
+                    lineContainer.appendChild(space);
+                    return;
+                }
+
                 const span = document.createElement('span');
                 span.textContent = char;
                 span.className = 'balloon-char';
                 
-                // Staggered Animation for "Float"
-                // Randomize delay slightly so they don't bob in perfect unison
-                const delay = Math.random() * 2;
-                const duration = 3 + Math.random() * 2; // 3-5s duration
-                span.style.animation = `floatBalloon ${duration}s ease-in-out infinite alternate`;
-                span.style.animationDelay = `-${delay}s`;
-                
-                container.appendChild(span);
-            });
-        }
-
-        function triggerInflation() {
-            const chars = document.querySelectorAll('.balloon-char');
-            chars.forEach((char, index) => {
-                // Reset animation to trigger reflow
-                char.style.animation = 'none';
-                char.offsetHeight; /* trigger reflow */
-                
-                // Re-apply float, but add inflate entrance
-                // We combine animations: inflate runs once, float runs infinitely
+                // 1. Permanent Float Animation
                 const floatDelay = Math.random() * 2;
                 const floatDuration = 3 + Math.random() * 2;
                 
-                // Stagger the inflation slightly for a wave effect
+                // 2. Entrance Pop-in Animation
+                // Stagger inflation by index for wave effect
                 const inflateDelay = index * 0.05; 
                 
-                char.style.animation = `
+                // Combine: Inflate once, then Float forever
+                span.style.animation = `
                     inflate 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${inflateDelay}s forwards, 
                     floatBalloon ${floatDuration}s ease-in-out ${inflateDelay + 0.8}s infinite alternate
                 `;
+                
+                lineContainer.appendChild(span);
             });
+
+            return lineContainer;
         }
 
-        // --- 2. Snow System ---
+        async function runMessageSequence() {
+            const container = document.getElementById('message-container');
+            
+            // Loop forever
+            while (true) {
+                // If sleeping, wait and check again
+                if (document.body.classList.contains('sleeping')) {
+                    await new Promise(r => setTimeout(r, 2000));
+                    continue;
+                }
+
+                // 1. Clear previous
+                container.innerHTML = '';
+                
+                // 2. Add lines one by one
+                for (const lineConfig of MESSAGE_LINES) {
+                    if (document.body.classList.contains('sleeping')) break;
+
+                    const lineEl = createBalloonLine(lineConfig);
+                    container.appendChild(lineEl);
+                    
+                    // Wait for next line
+                    await new Promise(r => setTimeout(r, CONFIG.sequenceDelay));
+                }
+
+                // 3. Wait while full message is displayed
+                await new Promise(r => setTimeout(r, CONFIG.cycleResetTime));
+                
+                // 4. Fade out effect (optional, or just clear)
+                container.style.opacity = '0';
+                await new Promise(r => setTimeout(r, 1000));
+                container.innerHTML = '';
+                container.style.opacity = '1';
+            }
+        }
+
+        // --- 2. Particle Systems (Snow & Music) ---
         function createSnowLayer(containerId, count, minSize, maxSize, minOpacity, maxOpacity) {
             const container = document.getElementById(containerId);
-            
             for (let i = 0; i < count; i++) {
                 const flake = document.createElement('div');
                 flake.classList.add('snowflake');
-                
-                // Random Positioning
                 flake.style.left = Math.random() * 100 + 'vw';
                 flake.style.top = '-10vh';
-                
-                // Random Appearance
                 const size = Math.random() * (maxSize - minSize) + minSize;
                 flake.style.width = size + 'vw';
                 flake.style.height = size + 'vw';
                 flake.style.opacity = Math.random() * (maxOpacity - minOpacity) + minOpacity;
-                
-                // Random Fall Physics
-                const duration = Math.random() * 5 + 10; // 10-15s fall time
+                const duration = Math.random() * 5 + 10;
                 flake.style.animationDuration = duration + 's';
-                flake.style.animationDelay = (Math.random() * duration) * -1 + 's'; // Start randomly
-                
+                flake.style.animationDelay = (Math.random() * duration) * -1 + 's';
                 container.appendChild(flake);
             }
         }
 
-        function initSnow() {
-            // Back Snow: Smaller, dimmer, behind text
+        function createMusicNotes() {
+            const container = document.getElementById('music-notes-layer');
+            const symbols = ['♪', '♫', '♩'];
+            const noteCount = 9; // Reduced from 12
+
+            for (let i = 0; i < noteCount; i++) {
+                const note = document.createElement('div');
+                note.classList.add('music-note');
+                note.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                
+                // Position: Mostly on the sides (0-20% or 80-100%)
+                const isLeft = Math.random() > 0.5;
+                const xPos = isLeft ? Math.random() * 20 : 80 + Math.random() * 20;
+                
+                note.style.left = xPos + 'vw';
+                
+                // Size variation
+                const size = 1.5 + Math.random() * 2; // 1.5rem to 3.5rem
+                note.style.fontSize = size + 'rem';
+
+                // Animation physics
+                const duration = 6 + Math.random() * 6; // 6-12s float up
+                note.style.animationDuration = duration + 's';
+                note.style.animationDelay = (Math.random() * duration) * -1 + 's';
+                
+                container.appendChild(note);
+            }
+        }
+
+        function initEnvironment() {
             createSnowLayer('snow-back', 30, 0.2, 0.5, 0.1, 0.4);
-            
-            // Front Snow: Larger, brighter, in front of text
             createSnowLayer('snow-front', 20, 0.6, 1.2, 0.5, 0.9);
+            createMusicNotes();
         }
 
-        // --- 3. Animation Cycle Logic ---
-        function startAnimationCycle() {
-            // Initial state: Text inflates
-            triggerInflation();
-
-            setInterval(() => {
-                // If sleeping, do not run animation logic
-                if (document.body.classList.contains('sleeping')) return;
-
-                // Just re-trigger the inflation animation
-                triggerInflation();
-
-            }, CONFIG.refreshInterval);
-        }
-
-        // --- 4. Sleep Timer Logic ---
+        // --- 3. Sleep Timer Logic ---
         function checkTime() {
             const now = new Date();
             const currentHour = now.getHours() + (now.getMinutes() / 60);
             
-            // Sleep Condition: After 10:30 PM OR Before 6:00 AM
-            // 22:30 = 22.5
             const isSleepTime = currentHour >= CONFIG.sleepTime || currentHour < CONFIG.wakeTime;
 
             if (isSleepTime && !CONFIG.debug) {
@@ -283,25 +346,16 @@
                 if (document.body.classList.contains('sleeping')) {
                     console.log("Good morning! Waking up.");
                     document.body.classList.remove('sleeping');
-                    // Re-trigger animation on wake
-                    triggerInflation();
                 }
             }
         }
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Setup Text
-            createBalloonText('word-merry', 'MERRY');
-            createBalloonText('word-christmas', 'CHRISTMAS');
+            initEnvironment();
+            runMessageSequence();
             
-            // Setup Environment
-            initSnow();
-            
-            // Start Cycles
-            startAnimationCycle();
-            
-            // Start Sleep Timer (Check every minute)
+            // Start Sleep Timer
             checkTime();
             setInterval(checkTime, 60000);
         });
