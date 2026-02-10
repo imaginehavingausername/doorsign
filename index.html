@@ -3,92 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Door Sign</title>
+    <title>Door Sign - Valentine's</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Switched to Nunito (Rounded, 800/900 weight) for a soft, snowy, bold look -->
+    <!-- Keeping Nunito for that soft, friendly look -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Nunito', sans-serif; /* Updated Font */
+            font-family: 'Nunito', sans-serif;
             overflow: hidden;
             margin: 0;
-            background-color: #74b9ff;
+            background-color: #ff758c; /* Fallback pink */
         }
 
-        /* --- Dedicated Background Layer --- */
-        /* Made colors slightly more distinct so movement is noticeable */
+        /* --- Romantic Background Layer --- */
         #bg-layer {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: radial-gradient(circle at center, #89C4F4 0%, #B0E0E6 50%, #5D9CEC 100%);
-            background-size: 300% 300%;
-            animation: radialShift 20s ease-in-out infinite alternate;
+            /* Pink, Salmon, and Soft Purple gradient */
+            background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #ffccd5, #c792ea);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             z-index: 1;
         }
 
-        @keyframes radialShift {
+        @keyframes gradientBG {
             0% { background-position: 0% 50%; }
-            50% { background-position: 100% 70%; }
+            50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        /* --- Aurora Borealis Effect --- */
-        .aurora-container {
+        /* --- Vignette Glow (Replaces Aurora) --- */
+        /* Adds a soft dark rim to make white text pop in the center */
+        .vignette {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 45vh; /* Top half-ish */
-            overflow: hidden;
+            height: 100%;
+            background: radial-gradient(circle, transparent 40%, rgba(150, 50, 80, 0.3) 100%);
             z-index: 2;
             pointer-events: none;
-            opacity: 0.8;
-            mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
-        }
-
-        .aurora {
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: repeating-linear-gradient(
-                90deg,
-                rgba(86, 255, 180, 0) 0%,
-                rgba(86, 255, 180, 0.2) 15%,
-                rgba(150, 50, 255, 0.2) 30%,
-                rgba(86, 255, 180, 0) 45%
-            );
-            background-size: 200% 100%;
-            filter: blur(20px);
-            animation: auroraMove 15s linear infinite alternate;
-            transform: skewY(10deg);
-            mix-blend-mode: screen;
-        }
-
-        .aurora:nth-child(2) {
-            top: -40%;
-            animation-duration: 22s;
-            animation-direction: alternate-reverse;
-            background: repeating-linear-gradient(
-                90deg,
-                rgba(0, 255, 130, 0) 0%,
-                rgba(0, 255, 130, 0.15) 20%,
-                rgba(200, 100, 255, 0.15) 40%,
-                rgba(0, 255, 130, 0) 60%
-            );
-            filter: blur(30px);
-        }
-
-        @keyframes auroraMove {
-            0% { transform: translateX(-10%) skewY(5deg); }
-            100% { transform: translateX(10%) skewY(-5deg); }
         }
 
         /* --- Main Screen Container --- */
@@ -103,12 +62,13 @@
             align-items: center;
             flex-direction: column;
             color: #ffffff;
-            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            z-index: 20; /* Text on top */
+            /* Softer, pinkish shadow for the text */
+            text-shadow: 0 4px 10px rgba(180, 0, 50, 0.3);
+            z-index: 20;
             pointer-events: none;
         }
 
-        /* --- Effects Styling --- */
+        /* --- Effects Styling (Hearts) --- */
         .effect-container {
             position: absolute;
             top: 0;
@@ -116,23 +76,46 @@
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            z-index: 5; /* Between BG and Text */
+            z-index: 5;
             pointer-events: none;
         }
 
-        .snowflake {
+        /* Pure CSS Heart Shape */
+        .heart {
             position: absolute;
-            top: -20px;
-            background-color: white;
-            border-radius: 50%;
-            opacity: 0.8;
-            animation: fall linear infinite;
-            box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+            bottom: -50px; /* Start below screen */
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.6);
+            transform: rotate(45deg);
+            animation: floatUp linear infinite;
         }
 
-        @keyframes fall {
-            0% { transform: translateY(-10vh) translateX(0px); }
-            100% { transform: translateY(110vh) translateX(25px); }
+        .heart::before,
+        .heart::after {
+            content: "";
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: inherit; /* Inherit color/opacity from parent */
+            position: absolute;
+        }
+
+        .heart::before { left: -10px; }
+        .heart::after { top: -10px; }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(45deg) scale(0.8);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-120vh) rotate(45deg) scale(1.2); /* Move way up */
+                opacity: 0;
+            }
         }
 
         #message-content {
@@ -151,8 +134,8 @@
             width: 100vw;
             height: 100vh;
             background-color: black;
-            z-index: 9999; /* On top of absolutely everything */
-            display: none; /* Hidden by default */
+            z-index: 9999;
+            display: none;
             cursor: none;
         }
     </style>
@@ -165,13 +148,10 @@
     <!-- Background Layer -->
     <div id="bg-layer"></div>
 
-    <!-- Aurora Borealis Layer -->
-    <div class="aurora-container">
-        <div class="aurora"></div>
-        <div class="aurora"></div>
-    </div>
+    <!-- Vignette for text contrast -->
+    <div class="vignette"></div>
 
-    <!-- Container for visual effects (Snow) -->
+    <!-- Container for visual effects (Hearts) -->
     <div id="effects-container" class="effect-container"></div>
 
     <!-- Screen for the main message -->
@@ -200,23 +180,35 @@
             }
         }
 
-        // --- Removed Balloon Logic ---
-
-        function createSnowflake() {
-            const snowflake = document.createElement('div');
-            snowflake.classList.add('snowflake');
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
             
-            const size = Math.random() * 6 + 4; // Size between 4px and 10px
-            snowflake.style.width = size + 'px';
-            snowflake.style.height = size + 'px';
-            snowflake.style.left = Math.random() * 100 + 'vw';
-            snowflake.style.opacity = Math.random() * 0.6 + 0.4;
+            // Randomize Size
+            const sizeBase = Math.random() * 10 + 10; // 10px to 20px
+            heart.style.width = sizeBase + 'px';
+            heart.style.height = sizeBase + 'px';
             
-            const duration = Math.random() * 3 + 3; 
-            snowflake.style.animationDuration = duration + 's';
+            // Adjust pseudo-elements to match size
+            // (Note: complex CSS var manipulation is cleaner, but this is simple JS logic)
+            // For simplicity in this specific "Pure CSS Heart" hack, we scale via transform in animation
+            // or we can just leave the base css size and rely on opacity/randomness.
+            // Let's rely on standard size but random left/speed.
 
-            effectsContainer.appendChild(snowflake);
-            setTimeout(() => { snowflake.remove(); }, duration * 1000);
+            heart.style.left = Math.random() * 100 + 'vw';
+            
+            // Randomize Color (White vs Soft Pink)
+            const isPink = Math.random() > 0.7;
+            heart.style.background = isPink ? 'rgba(255, 182, 193, 0.6)' : 'rgba(255, 255, 255, 0.4)';
+
+            const duration = Math.random() * 5 + 6; // 6 to 11 seconds (slower float)
+            heart.style.animationDuration = duration + 's';
+            
+            // Add a little delay so they don't all start at bottom 0 instantly if spammed
+            heart.style.animationDelay = '-' + Math.random() * 5 + 's';
+
+            effectsContainer.appendChild(heart);
+            setTimeout(() => { heart.remove(); }, duration * 1000);
         }
 
         // --- Night Mode / Timer Logic ---
@@ -231,11 +223,6 @@
             const currentTotalMinutes = hours * 60 + minutes;
             const startBlackoutMinutes = 22 * 60 + 45; // 1365
             const endBlackoutMinutes = 6 * 60;         // 360
-
-            // Logic: Blackout if Current time is GREATER than Start OR LESS than End
-            // e.g., 23:00 (1380 > 1365) -> Blackout
-            // e.g., 01:00 (60 < 360) -> Blackout
-            // e.g., 12:00 (720 !> 1365 && 720 !< 360) -> Visible
 
             if (currentTotalMinutes >= startBlackoutMinutes || currentTotalMinutes < endBlackoutMinutes) {
                 if (blackoutLayer.style.display !== 'block') {
@@ -254,7 +241,7 @@
 
         // Intervals
         setInterval(loadMessage, 5000); 
-        setInterval(createSnowflake, 150);
+        setInterval(createHeart, 400); // Create hearts slightly less frequently than snow
         setInterval(checkTime, 60000); // Check time every minute
 
     </script>
