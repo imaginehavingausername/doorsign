@@ -7,18 +7,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Switched to Nunito (Rounded, 800/900 weight) for a soft, snowy, bold look -->
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+    <!-- Combined Nunito for the main text/labels and Bungee for the countdown numbers -->
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Nunito', sans-serif; /* Updated Font */
+            font-family: 'Nunito', sans-serif;
             overflow: hidden;
             margin: 0;
             background-color: #74b9ff;
         }
 
+        .font-bungee {
+            font-family: 'Bungee', sans-serif;
+        }
+
         /* --- Dedicated Background Layer --- */
-        /* Made colors slightly more distinct so movement is noticeable */
         #bg-layer {
             position: fixed;
             top: 0;
@@ -27,199 +30,220 @@
             height: 100vh;
             background: radial-gradient(circle at center, #89C4F4 0%, #B0E0E6 50%, #5D9CEC 100%);
             background-size: 300% 300%;
-            animation: radialShift 20s ease-in-out infinite alternate;
-            z-index: 1;
+            animation: radialShift 20s ease-in-out infinite;
+            z-index: -2;
         }
 
         @keyframes radialShift {
             0% { background-position: 0% 50%; }
-            50% { background-position: 100% 70%; }
+            50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        /* --- Aurora Borealis Effect --- */
-        .aurora-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 45vh; /* Top half-ish */
-            overflow: hidden;
-            z-index: 2;
-            pointer-events: none;
-            opacity: 0.8;
-            mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
-        }
-
-        .aurora {
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: repeating-linear-gradient(
-                90deg,
-                rgba(86, 255, 180, 0) 0%,
-                rgba(86, 255, 180, 0.2) 15%,
-                rgba(150, 50, 255, 0.2) 30%,
-                rgba(86, 255, 180, 0) 45%
-            );
-            background-size: 200% 100%;
-            filter: blur(20px);
-            animation: auroraMove 15s linear infinite alternate;
-            transform: skewY(10deg);
-            mix-blend-mode: screen;
-        }
-
-        .aurora:nth-child(2) {
-            top: -40%;
-            animation-duration: 22s;
-            animation-direction: alternate-reverse;
-            background: repeating-linear-gradient(
-                90deg,
-                rgba(0, 255, 130, 0) 0%,
-                rgba(0, 255, 130, 0.15) 20%,
-                rgba(200, 100, 255, 0.15) 40%,
-                rgba(0, 255, 130, 0) 60%
-            );
-            filter: blur(30px);
-        }
-
-        @keyframes auroraMove {
-            0% { transform: translateX(-10%) skewY(5deg); }
-            100% { transform: translateX(10%) skewY(-5deg); }
-        }
-
-        /* --- Main Screen Container --- */
-        .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: #ffffff;
-            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            z-index: 20; /* Text on top */
-            pointer-events: none;
-        }
-
-        /* --- Effects Styling --- */
-        .effect-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            z-index: 5; /* Between BG and Text */
-            pointer-events: none;
-        }
-
-        .snowflake {
-            position: absolute;
-            top: -20px;
-            background-color: white;
-            border-radius: 50%;
-            opacity: 0.8;
-            animation: fall linear infinite;
-            box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-        }
-
-        @keyframes fall {
-            0% { transform: translateY(-10vh) translateX(0px); }
-            100% { transform: translateY(110vh) translateX(25px); }
-        }
-
-        #message-content {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* --- Sleep Mode / Blackout --- */
-        #blackout-layer {
+        /* --- Aurora Effect --- */
+        #aurora {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: black;
-            z-index: 9999; /* On top of absolutely everything */
-            display: none; /* Hidden by default */
-            cursor: none;
+            background: linear-gradient(45deg, rgba(46, 204, 113, 0.2), rgba(52, 152, 219, 0.2), rgba(155, 89, 182, 0.2));
+            filter: blur(40px);
+            opacity: 0.6;
+            animation: auroraWaver 15s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes auroraWaver {
+            0%, 100% { transform: scale(1) translate(0, 0); }
+            50% { transform: scale(1.1) translate(-20px, 20px); }
+        }
+
+        /* --- Snowflake Styles --- */
+        .snowflake {
+            position: fixed;
+            top: -10vh;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: fall linear forwards;
+            z-index: 20;
+            box-shadow: 0 0 5px rgba(255,255,255,0.8);
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh);
+            }
+        }
+
+        /* --- Blackout Layer --- */
+        #blackout {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            z-index: 9999;
+            display: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- Blackout Layer for Night Mode -->
-    <div id="blackout-layer"></div>
-
-    <!-- Background Layer -->
+    <!-- Background Animations -->
     <div id="bg-layer"></div>
+    <div id="aurora"></div>
 
-    <!-- Aurora Borealis Layer -->
-    <div class="aurora-container">
-        <div class="aurora"></div>
-        <div class="aurora"></div>
+    <!-- Screen 1: Message Screen -->
+    <div id="message-container" class="absolute inset-0 flex items-center justify-center p-6 z-10 transition-opacity duration-1000" style="opacity: 1;">
+        <h1 id="message" class="text-5xl md:text-7xl text-white font-black text-center drop-shadow-[0_4px_4px_rgba(0,0,0,0.3)] w-full break-words">Loading...</h1>
     </div>
 
-    <!-- Container for visual effects (Snow) -->
-    <div id="effects-container" class="effect-container"></div>
-
-    <!-- Screen for the main message -->
-    <div id="message-screen" class="screen">
-        <div id="message-content">
-            <!-- Loading message content... -->
+    <!-- Screen 2: Countdown Screen -->
+    <div id="countdown-screen" class="absolute inset-0 flex items-center justify-center p-4 z-10 transition-opacity duration-1000" style="opacity: 0; pointer-events: none;">
+        <!-- Container matching birthday.html styles but with #3b82f6 background instead of white -->
+        <div class="rounded-[2rem] shadow-2xl flex flex-col items-center justify-center py-8 px-4 w-full max-w-[350px] border-4 border-white/20" style="background-color: #3b82f6;">
+            <h2 class="text-2xl text-white font-black mb-6 text-center drop-shadow-md uppercase tracking-wide">Jacob's Birthday</h2>
+            <div class="flex gap-2 justify-center w-full">
+                <!-- WEEKS -->
+                <div class="flex flex-col items-center bg-white rounded-xl py-2 w-[4.5rem] shadow-inner">
+                    <span class="text-3xl font-bungee text-[#3b82f6]" id="cd-weeks">00</span>
+                    <span class="text-[10px] font-bold text-gray-500 mt-1">WEEKS</span>
+                </div>
+                <!-- DAYS -->
+                <div class="flex flex-col items-center bg-white rounded-xl py-2 w-[4.5rem] shadow-inner">
+                    <span class="text-3xl font-bungee text-[#3b82f6]" id="cd-days">00</span>
+                    <span class="text-[10px] font-bold text-gray-500 mt-1">DAYS</span>
+                </div>
+                <!-- HOURS -->
+                <div class="flex flex-col items-center bg-white rounded-xl py-2 w-[4.5rem] shadow-inner">
+                    <span class="text-3xl font-bungee text-[#3b82f6]" id="cd-hours">00</span>
+                    <span class="text-[10px] font-bold text-gray-500 mt-1">HOURS</span>
+                </div>
+                <!-- SECONDS -->
+                <div class="flex flex-col items-center bg-white rounded-xl py-2 w-[4.5rem] shadow-inner">
+                    <span class="text-3xl font-bungee text-[#3b82f6]" id="cd-seconds">00</span>
+                    <span class="text-[10px] font-bold text-gray-500 mt-1">SECS</span>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- Night Mode Overlay -->
+    <div id="blackout"></div>
+
     <script>
-        const messageContent = document.getElementById('message-content');
-        const effectsContainer = document.getElementById('effects-container');
-        const blackoutLayer = document.getElementById('blackout-layer');
-        
+        // --- Message Loading Logic ---
         async function loadMessage() {
             try {
-                // Cache busting to ensure we get new messages immediately
-                const response = await fetch('message.html?t=' + new Date().getTime());
-                if (!response.ok) throw new Error('Network response was not ok');
-                const html = await response.text();
-                if (messageContent.innerHTML !== html) {
-                    messageContent.innerHTML = html;
+                // Fetch with cache buster
+                const response = await fetch(`message.txt?t=${new Date().getTime()}`);
+                if (response.ok) {
+                    const text = await response.text();
+                    document.getElementById('message').innerText = text;
                 }
             } catch (error) {
-                console.error('Failed to fetch message:', error);
+                console.error('Error fetching message:', error);
             }
         }
+        setInterval(loadMessage, 30000); // Check for updates every 30s
 
-        // --- Removed Balloon Logic ---
+        // --- Screen Switching Logic ---
+        const messageScreen = document.getElementById('message-container');
+        const countdownScreen = document.getElementById('countdown-screen');
+        let isShowingMessage = true;
 
+        setInterval(() => {
+            isShowingMessage = !isShowingMessage;
+            if (isShowingMessage) {
+                messageScreen.style.opacity = '1';
+                countdownScreen.style.opacity = '0';
+            } else {
+                messageScreen.style.opacity = '0';
+                countdownScreen.style.opacity = '1';
+            }
+        }, 5000);
+
+        // --- Countdown Logic ---
+        function getNextMarch26() {
+            const now = new Date();
+            // Month is 0-indexed, so 2 is March
+            let target = new Date(now.getFullYear(), 2, 26, 0, 0, 0);
+            if (target < now) {
+                target = new Date(now.getFullYear() + 1, 2, 26, 0, 0, 0);
+            }
+            return target;
+        }
+
+        let countdownTargetDate = getNextMarch26();
+
+        function updateCountdown() {
+            const now = new Date();
+            let diff = countdownTargetDate - now;
+
+            if (diff <= 0) {
+                diff = 0;
+                countdownTargetDate = getNextMarch26();
+            }
+
+            const totalSeconds = Math.floor(diff / 1000);
+            const secondsInDay = 24 * 60 * 60;
+            const secondsInWeek = 7 * secondsInDay;
+
+            const weeks = Math.floor(totalSeconds / secondsInWeek);
+            let remainder = totalSeconds % secondsInWeek;
+
+            const days = Math.floor(remainder / secondsInDay);
+            remainder %= secondsInDay;
+
+            const hours = Math.floor(remainder / 3600);
+            remainder %= 3600;
+
+            const seconds = remainder % 60;
+
+            const formatValue = (value, pad = 2) => value.toString().padStart(pad, '0');
+
+            document.getElementById('cd-weeks').textContent = formatValue(weeks);
+            document.getElementById('cd-days').textContent = formatValue(days);
+            document.getElementById('cd-hours').textContent = formatValue(hours);
+            document.getElementById('cd-seconds').textContent = formatValue(seconds);
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        // --- Snow Falling Logic ---
         function createSnowflake() {
             const snowflake = document.createElement('div');
             snowflake.classList.add('snowflake');
             
-            const size = Math.random() * 6 + 4; // Size between 4px and 10px
+            // Random horizontal position
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            
+            // Random opacity for depth
+            snowflake.style.opacity = Math.random();
+            
+            // Random size between 5px and 15px
+            const size = Math.random() * 10 + 5;
             snowflake.style.width = size + 'px';
             snowflake.style.height = size + 'px';
-            snowflake.style.left = Math.random() * 100 + 'vw';
-            snowflake.style.opacity = Math.random() * 0.6 + 0.4;
             
-            const duration = Math.random() * 3 + 3; 
+            // Random fall duration between 5s and 10s
+            const duration = Math.random() * 5 + 5;
             snowflake.style.animationDuration = duration + 's';
-
-            effectsContainer.appendChild(snowflake);
+            
+            document.body.appendChild(snowflake);
+            
+            // Cleanup
             setTimeout(() => { snowflake.remove(); }, duration * 1000);
         }
+        setInterval(createSnowflake, 300);
 
         // --- Night Mode / Timer Logic ---
+        const blackoutLayer = document.getElementById('blackout');
         function checkTime() {
             const now = new Date();
             const hours = now.getHours();
@@ -233,10 +257,6 @@
             const endBlackoutMinutes = 6 * 60;         // 360
 
             // Logic: Blackout if Current time is GREATER than Start OR LESS than End
-            // e.g., 23:00 (1380 > 1365) -> Blackout
-            // e.g., 01:00 (60 < 360) -> Blackout
-            // e.g., 12:00 (720 !> 1365 && 720 !< 360) -> Visible
-
             if (currentTotalMinutes >= startBlackoutMinutes || currentTotalMinutes < endBlackoutMinutes) {
                 if (blackoutLayer.style.display !== 'block') {
                     blackoutLayer.style.display = 'block';
@@ -248,15 +268,10 @@
             }
         }
 
-        // Initial Calls
+        // --- Initial Calls ---
         loadMessage();
         checkTime();
-
-        // Intervals
-        setInterval(loadMessage, 5000); 
-        setInterval(createSnowflake, 150);
-        setInterval(checkTime, 60000); // Check time every minute
-
+        setInterval(checkTime, 60000); // Check night mode every minute
     </script>
 </body>
 </html>
