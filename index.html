@@ -139,11 +139,12 @@
         // --- Message Loading Logic ---
         async function loadMessage() {
             try {
-                // Fetch with cache buster
-                const response = await fetch(`message.txt?t=${new Date().getTime()}`);
+                // Fetch with cache buster - corrected to message.html
+                const response = await fetch(`message.html?t=${new Date().getTime()}`);
                 if (response.ok) {
                     const text = await response.text();
-                    document.getElementById('message').innerText = text;
+                    // Corrected to innerHTML to support HTML messages
+                    document.getElementById('message').innerHTML = text;
                 }
             } catch (error) {
                 console.error('Error fetching message:', error);
