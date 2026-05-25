@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seamless Looping Background Video</title>
+    <title>Doorsign</title>
     <style>
         /* Reset margins and padding to prevent scrollbars */
         body, html {
@@ -12,7 +12,8 @@
             width: 100%;
             height: 100%;
             overflow: hidden; 
-            background-color: #000; /* Fallback color while video loads */
+            background-color: #111; /* Dark background while video loads */
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         /* Style the video to fill the screen perfectly */
@@ -23,38 +24,170 @@
             width: 100vw;
             height: 100vh;
             object-fit: cover; /* Ensures the video covers the entire viewport without distortion */
-            z-index: -1; /* Puts the video behind all other content on the page */
+            z-index: 1; /* Keep behind diagnostics, but on top of default background */
+            transition: opacity 0.5s ease;
+            opacity: 0; /* Start hidden, fade in when ready */
         }
 
-        /* Example styling for content layered on top of the video */
-        .content {
-            position: relative;
-            z-index: 1;
-            color: white;
-            font-family: system-ui, -apple-system, sans-serif;
+        .background-video.playing {
+            opacity: 1;
+        }
+
+        /* Status & Diagnostic Overlay (only visible if there is an error) */
+        #status-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            pointer-events: none; /* Let clicks pass through to the page */
+            background: rgba(0, 0, 0, 0.85);
+            padding: 24px 32px;
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none; /* Hidden by default */
+        }
+
+        #status-overlay h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+            letter-spacing: 0.05em;
+            color: #ff4a4a; /* Highlight errors in soft red */
+        }
+
+        #status-overlay p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        /* Click to play overlay (for browsers blocking autoplay) */
+        #interaction-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            background: rgba(0, 0, 0, 0.6);
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            text-align: center;
-            /* Optional: Add a dark overlay so text is easier to read against bright videos */
-            background-color: rgba(0, 0, 0, 0.3); 
+            cursor: pointer;
+            display: none; /* Only shown if autoplay is blocked */
+        }
+
+        .play-btn {
+            background: white;
+            color: black;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body>
 
-    <!-- 
-      Video Element
-      autoplay: Starts playing automatically
-      loop: Repeats the video indefinitely
-      muted: Required by browsers to allow autoplay
-      playsinline: Prevents the video from automatically going full-screen on mobile
-    -->
-    <video class="background-video" autoplay loop muted playsinline>
+    <!-- Video Element -->
+    <video id="my-video" class="background-video" autoplay loop muted playsinline>
         <source src="background.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
+
+    <!-- Error/Diagnostic Info -->
+    <div id="status-overlay">
+        <h2 id="status-title">Notice</h2>
+        <p id="status-desc">Preparing background...</p>
+    </div>
+
+    <!-- Click helper for blocked autoplay -->
+    <div id="interaction-overlay">
+        <button class="play-btn">Click to Play Video</button>
+    </div>
+
+    <script>
+        const video = document.getElementById('my-video');
+        const statusTitle = document.getElementById('status-title');
+        const statusDesc = document.getElementById('status-desc');
+        const statusOverlay = document.getElementById('status-overlay');
+        const interactionOverlay = document.getElementById('interaction-overlay');
+
+        // Helper to show the diagnostic box if something is wrong
+        function showDiagnostic(title, message) {
+            statusTitle.textContent = title;
+            statusDesc.textContent = message;
+            statusOverlay.style.display = 'block';
+        }
+
+        // Helper to hide diagnostic box
+        function hideDiagnostic() {
+            statusOverlay.style.display = 'none';
+        }
+
+        // 1. Check if the video started playing successfully
+        video.addEventListener('playing', () => {
+            hideDiagnostic();
+            video.classList.add('playing');
+        });
+
+        // 2. Handle potential errors
+        video.addEventListener('error', (e) => {
+            const err = video.error;
+            let message = "An unknown error occurred while loading your video.";
+            
+            if (err) {
+                switch (err.code) {
+                    case 1: // MEDIA_ERR_ABORTED
+                        message = "The video loading process was cancelled.";
+                        break;
+                    case 2: // MEDIA_ERR_NETWORK
+                        message = "A network error occurred. Please verify that your file name is spelled exactly 'background.mp4' (including lower-case letters).";
+                        break;
+                    case 3: // MEDIA_ERR_DECODE
+                        message = "Decoding error: Your browser doesn't support this specific MP4 format. You might need to re-encode the video file to standard H.264.";
+                        break;
+                    case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
+                        message = "File not found or format not supported. Make sure 'background.mp4' is sitting in the exact same folder as this index.html file.";
+                        break;
+                }
+            }
+            showDiagnostic("Video Loading Error", message);
+        });
+
+        // 3. Handle Autoplay Blocked state
+        // Attempt to play explicitly and catch standard browser restrictions
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log("Autoplay blocked by browser policy. Interaction required.");
+                interactionOverlay.style.display = 'flex';
+            });
+        }
+
+        // Handle user clicking the "Click to Play" overlay
+        interactionOverlay.addEventListener('click', () => {
+            video.play()
+                .then(() => {
+                    interactionOverlay.style.display = 'none';
+                    hideDiagnostic();
+                })
+                .catch(err => {
+                    showDiagnostic("Playback Failed", err.message);
+                });
+        });
+    </script>
 </body>
 </html>
