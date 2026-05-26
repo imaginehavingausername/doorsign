@@ -2,192 +2,233 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doorsign</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Summer Door Sign</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Reset margins and padding to prevent scrollbars */
-        body, html {
+        /* Custom Animations & Backgrounds */
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 0.95; transform: scale(1.03); }
+        }
+        @keyframes float-gentle {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(3deg); }
+        }
+        @keyframes sun-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .bg-summer-gradient {
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 40%, #fffc00 100%);
+            background-size: 200% 200%;
+            animation: gradient-shift 15s ease infinite;
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .animate-pulse-slow {
+            animation: pulse-slow 8s ease-in-out infinite;
+        }
+
+        .animate-float-leaf-1 {
+            animation: float-gentle 6s ease-in-out infinite;
+        }
+
+        .animate-float-leaf-2 {
+            animation: float-gentle 8s ease-in-out infinite 1s;
+        }
+
+        .animate-sun-spin {
+            animation: sun-spin 120s linear infinite;
+        }
+
+        /* Prevent system scrolling & bounce on mobile devices */
+        html, body {
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden; 
-            background-color: #111; /* Dark background while video loads */
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        /* Style the video to fill the screen perfectly */
-        .background-video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover; /* Ensures the video covers the entire viewport without distortion */
-            z-index: 1; /* Keep behind diagnostics, but on top of default background */
-            transition: opacity 0.5s ease;
-            opacity: 0; /* Start hidden, fade in when ready */
-        }
-
-        .background-video.playing {
-            opacity: 1;
-        }
-
-        /* Status & Diagnostic Overlay (only visible if there is an error) */
-        #status-overlay {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            color: rgba(255, 255, 255, 0.9);
-            text-align: center;
-            pointer-events: none; /* Let clicks pass through to the page */
-            background: rgba(0, 0, 0, 0.85);
-            padding: 24px 32px;
-            border-radius: 12px;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: none; /* Hidden by default */
-        }
-
-        #status-overlay h2 {
-            margin: 0 0 10px 0;
-            font-size: 1.2rem;
-            letter-spacing: 0.05em;
-            color: #ff4a4a; /* Highlight errors in soft red */
-        }
-
-        #status-overlay p {
-            margin: 0;
-            font-size: 0.9rem;
-            opacity: 0.8;
-            line-height: 1.4;
-        }
-
-        /* Click to play overlay (for browsers blocking autoplay) */
-        #interaction-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 5;
-            background: rgba(0, 0, 0, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            display: none; /* Only shown if autoplay is blocked */
-        }
-
-        .play-btn {
-            background: white;
-            color: black;
-            border: none;
-            padding: 14px 28px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .play-btn:hover {
-            transform: scale(1.05);
+            background-color: #000;
+            -webkit-user-select: none;
+            user-select: none;
         }
     </style>
 </head>
-<body>
+<body class="flex items-center justify-center font-sans transition-colors duration-1000">
 
-    <!-- Video Element -->
-    <video id="my-video" class="background-video" autoplay loop muted playsinline>
-        <source src="background.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+    <!-- Active Sign Content Layer -->
+    <div id="sign-container" class="relative w-full h-full flex flex-col items-center justify-center bg-summer-gradient transition-opacity duration-1000 ease-in-out opacity-100 overflow-hidden">
+        
+        <!-- Ambient Decorative Glowing Sun behind the message -->
+        <div class="absolute w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] rounded-full bg-amber-300 opacity-30 blur-3xl animate-pulse-slow"></div>
 
-    <!-- Error/Diagnostic Info -->
-    <div id="status-overlay">
-        <h2 id="status-title">Notice</h2>
-        <p id="status-desc">Preparing background...</p>
+        <!-- SVG Sunbeams (rotating slowly in the background) -->
+        <svg class="absolute w-[150vw] h-[150vw] max-w-[1200px] max-h-[1200px] text-white opacity-10 animate-sun-spin pointer-events-none" viewBox="0 0 100 100">
+            <g transform="translate(50,50)">
+                <path d="M0,0 L-5,-50 L5,-50 Z" fill="currentColor" />
+                <path d="M0,0 L-5,50 L5,50 Z" fill="currentColor" />
+                <path d="M0,0 L-50,-5 L-50,5 Z" fill="currentColor" />
+                <path d="M0,0 L50,-5 L50,5 Z" fill="currentColor" />
+                <path d="M0,0 L-32,-32 L-39,-25 Z" fill="currentColor" />
+                <path d="M0,0 L32,32 L39,25 Z" fill="currentColor" />
+                <path d="M0,0 L-32,32 L-39,25 Z" fill="currentColor" />
+                <path d="M0,0 L32,-32 L39,-25 Z" fill="currentColor" />
+            </g>
+        </svg>
+
+        <!-- Dynamic Content Area (Loaded from message.html) -->
+        <div id="message-target" class="relative z-10 flex flex-col items-center justify-center w-full px-6 text-center drop-shadow-[0_8px_24px_rgba(0,0,0,0.15)]">
+            <!-- Loading Fallback state (rendered if fetch has not succeeded yet) -->
+            <div class="flex flex-col text-center max-w-[90%] animate-pulse">
+                <div class="text-[6vw] font-extrabold uppercase text-white opacity-85 leading-tight">It's</div>
+                <div class="text-[10vw] font-extrabold uppercase text-gray-100 leading-tight">Summer:)</div>
+            </div>
+        </div>
+
+        <!-- Top Left Corner Leaf Deco -->
+        <div class="absolute -top-10 -left-10 w-40 h-40 md:w-60 md:h-60 text-emerald-800 opacity-20 pointer-events-none transform -rotate-12 animate-float-leaf-1">
+            <svg viewBox="0 0 100 100" class="w-full h-full" fill="currentColor">
+                <path d="M10,90 Q50,60 90,10 Q60,50 10,90 Q40,30 90,10" />
+            </svg>
+        </div>
+
+        <!-- Bottom Right Corner Leaf Deco -->
+        <div class="absolute -bottom-10 -right-10 w-48 h-48 md:w-72 md:h-72 text-yellow-800 opacity-15 pointer-events-none transform rotate-45 animate-float-leaf-2">
+            <svg viewBox="0 0 100 100" class="w-full h-full" fill="currentColor">
+                <path d="M10,90 Q50,50 90,10 Q50,70 10,90" />
+            </svg>
+        </div>
+
+
+
     </div>
 
-    <!-- Click helper for blocked autoplay -->
-    <div id="interaction-overlay">
-        <button class="play-btn">Click to Play Video</button>
+    <!-- Night Mode Blockout Layer -->
+    <div id="night-blockout" class="absolute inset-0 bg-black z-50 transition-opacity duration-1000 ease-in-out pointer-events-none opacity-0 flex flex-col items-center justify-center text-zinc-800 font-mono text-[9px]">
+        <!-- Completely black, with an invisible/near-invisible pixel to prevent iPhone from completely sleeping if required, and a debug indicator if pressed -->
+        <button onclick="overrideNightMode()" class="opacity-10 active:opacity-100 hover:opacity-100 px-4 py-2 rounded border border-zinc-800 text-center transition-all">
+            Night Mode Active (9:00 PM - 5:30 AM)<br>
+            Tap to temporarily preview
+        </button>
     </div>
 
     <script>
-        const video = document.getElementById('my-video');
-        const statusTitle = document.getElementById('status-title');
-        const statusDesc = document.getElementById('status-desc');
-        const statusOverlay = document.getElementById('status-overlay');
-        const interactionOverlay = document.getElementById('interaction-overlay');
+        // Configurable options
+        const MESSAGE_URL = 'message.html';
+        const START_NIGHT_HOUR = 21; // 9:00 PM (21:00)
+        const START_NIGHT_MIN = 0;
+        const END_NIGHT_HOUR = 5;    // 5:30 AM
+        const END_NIGHT_MIN = 30;
 
-        // Helper to show the diagnostic box if something is wrong
-        function showDiagnostic(title, message) {
-            statusTitle.textContent = title;
-            statusDesc.textContent = message;
-            statusOverlay.style.display = 'block';
+        let nightModeOverridden = false;
+        let overrideTimeout = null;
+
+        // Fetch and load custom message content directly from the sibling message.html
+        async function fetchMessageContent() {
+            try {
+                const response = await fetch(MESSAGE_URL);
+                if (!response.ok) {
+                    throw new Error(`Could not load message.html (status ${response.status})`);
+                }
+                const htmlText = await response.text();
+                
+                // Parse and inject the specific content safely
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, 'text/html');
+                
+                // Seek content from message.html body or container
+                const incomingContent = doc.body.innerHTML || htmlText;
+                
+                if (incomingContent.trim() !== "") {
+                    document.getElementById('message-target').innerHTML = incomingContent;
+                }
+            } catch (error) {
+                console.error("Message Fetch Error:", error);
+                // Keep the default static design intact if fetching fails or in preview
+            }
         }
 
-        // Helper to hide diagnostic box
-        function hideDiagnostic() {
-            statusOverlay.style.display = 'none';
-        }
+        // Live Night-Mode and Display Status Loop
+        function checkTimeAndDisplay() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMin = now.getMinutes();
 
-        // 1. Check if the video started playing successfully
-        video.addEventListener('playing', () => {
-            hideDiagnostic();
-            video.classList.add('playing');
-        });
+            // Format current time for display in status bar
+            const formatMin = currentMin.toString().padStart(2, '0');
+            const formatHour = currentHour.toString().padStart(2, '0');
+            document.getElementById('clock-display').innerText = `${formatHour}:${formatMin}`;
 
-        // 2. Handle potential errors
-        video.addEventListener('error', (e) => {
-            const err = video.error;
-            let message = "An unknown error occurred while loading your video.";
-            
-            if (err) {
-                switch (err.code) {
-                    case 1: // MEDIA_ERR_ABORTED
-                        message = "The video loading process was cancelled.";
-                        break;
-                    case 2: // MEDIA_ERR_NETWORK
-                        message = "A network error occurred. Please verify that your file name is spelled exactly 'background.mp4' (including lower-case letters).";
-                        break;
-                    case 3: // MEDIA_ERR_DECODE
-                        message = "Decoding error: Your browser doesn't support this specific MP4 format. You might need to re-encode the video file to standard H.264.";
-                        break;
-                    case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
-                        message = "File not found or format not supported. Make sure 'background.mp4' is sitting in the exact same folder as this index.html file.";
-                        break;
+            // Check if current local time falls into night range (9:00 PM to 5:30 AM)
+            let isNight = false;
+
+            const currentTotalMins = currentHour * 60 + currentMin;
+            const nightStartMins = START_NIGHT_HOUR * 60 + START_NIGHT_MIN; // 21 * 60 = 1260
+            const nightEndMins = END_NIGHT_HOUR * 60 + END_NIGHT_MIN;       // 5 * 60 + 30 = 330
+
+            if (nightStartMins > nightEndMins) {
+                // Spans over midnight (e.g. 9:00 PM to 5:30 AM next day)
+                if (currentTotalMins >= nightStartMins || currentTotalMins < nightEndMins) {
+                    isNight = true;
+                }
+            } else {
+                // Straight daylight boundaries
+                if (currentTotalMins >= nightStartMins && currentTotalMins < nightEndMins) {
+                    isNight = true;
                 }
             }
-            showDiagnostic("Video Loading Error", message);
-        });
 
-        // 3. Handle Autoplay Blocked state
-        // Attempt to play explicitly and catch standard browser restrictions
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-            playPromise.catch(error => {
-                console.log("Autoplay blocked by browser policy. Interaction required.");
-                interactionOverlay.style.display = 'flex';
-            });
+            const container = document.getElementById('sign-container');
+            const blockout = document.getElementById('night-blockout');
+
+            if (isNight && !nightModeOverridden) {
+                // Night mode active: Screen goes black
+                blockout.classList.remove('opacity-0', 'pointer-events-none');
+                blockout.classList.add('opacity-100');
+                container.classList.remove('opacity-100');
+                container.classList.add('opacity-0');
+            } else {
+                // Normal mode: Summer design active
+                blockout.classList.add('opacity-0', 'pointer-events-none');
+                blockout.classList.remove('opacity-100');
+                container.classList.add('opacity-100');
+                container.classList.remove('opacity-0');
+            }
         }
 
-        // Handle user clicking the "Click to Play" overlay
-        interactionOverlay.addEventListener('click', () => {
-            video.play()
-                .then(() => {
-                    interactionOverlay.style.display = 'none';
-                    hideDiagnostic();
-                })
-                .catch(err => {
-                    showDiagnostic("Playback Failed", err.message);
-                });
-        });
+        // Tap override feature for manual previewing during night hours
+        function overrideNightMode() {
+            nightModeOverridden = true;
+            checkTimeAndDisplay();
+            
+            // Re-lock or restore auto-scheduler after 10 seconds of no interaction
+            if (overrideTimeout) clearTimeout(overrideTimeout);
+            overrideTimeout = setTimeout(() => {
+                nightModeOverridden = false;
+                checkTimeAndDisplay();
+            }, 10000);
+        }
+
+        // Initialize and trigger periodic checks
+        window.onload = function() {
+            // First time fetches
+            fetchMessageContent();
+            checkTimeAndDisplay();
+
+            // Check time every 5 seconds
+            setInterval(checkTimeAndDisplay, 5000);
+
+            // Fetch message.html content updates every 60 seconds
+            setInterval(fetchMessageContent, 60000);
+        };
     </script>
 </body>
 </html>
